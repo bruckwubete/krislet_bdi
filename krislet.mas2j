@@ -1,0 +1,9 @@
+/*
+ Jason Exercise: Vacuum Cleaning 1
+*/
+
+MAS krislet {
+    environment: VCWorld
+    agents: vc;
+}
+
