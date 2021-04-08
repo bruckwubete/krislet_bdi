@@ -1,5 +1,6 @@
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
@@ -19,11 +20,13 @@ public class VCWorld extends Environment {
 
 
     /** constant terms used for perception */
-
+    public static final Literal play_on = ASSyntax.createLiteral("play_on");
+    public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
+    public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
     public static final Literal ball_not_in_view = ASSyntax.createLiteral("ball_not_in_view");
     public static final Literal ball_in_view_far = ASSyntax.createLiteral("ball_in_view_far");
-    public static final Literal ball_in_view_close_goal_not_in_view = ASSyntax.createLiteral("ball_in_view_close_goal_not_in_view");
-    public static final Literal ball_in_view_close_goal_in_view = ASSyntax.createLiteral("ball_in_view_close_goal_in_view");
+    public static final Literal ball_in_view_close = ASSyntax.createLiteral("ball_in_view_close");
+
     private KrisletContext playerContext;
 
     public VCWorld() {
@@ -37,7 +40,7 @@ public class VCWorld extends Environment {
 
     @Override
     public boolean executeAction(String ag, Structure action) {
-        logger.info("doing "+action);
+        logger.info(ag + " EXECUTING:  "+action);
 
         synchronized (modelLock) {
             // Change the world model based on action
@@ -51,8 +54,12 @@ public class VCWorld extends Environment {
                 case "turn_to_goal":
                     this.playerContext.player.turn(30);
                     break;
-                case "kick_to_gaol":
+                case "kick_to_goal":
                     this.playerContext.player.kick(100, 0);
+                    break;
+                case "move":
+                    //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
+                    this.playerContext.player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
                 default:
                     logger.info("The action " + action + " is not implemented!");

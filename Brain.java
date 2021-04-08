@@ -49,7 +49,7 @@ class Brain extends Thread implements SensorInput {
     //      2.1. If we are directed towards the ball then go to the ball
     //      2.2. else turn to the ball
     //
-    //  3. If we dont know where is opponent goal then turn wait 
+    //  3. If we dont know where is opponent goal then turn wait
     //              and wait for new info
     //
     //  4. Kick ball
@@ -67,18 +67,23 @@ class Brain extends Thread implements SensorInput {
         ObjectInfo ball;
         ObjectInfo goal;
 
-        // first put it somewhere on my side
-        if (Pattern.matches("^before_kick_off.*", m_playMode))
-            m_krislet.move(-Math.random() * 52.5, 34 - Math.random() * 68.0);
-
         float turnAngle = 10;
         float objectDistance = 10;
 
         while (!m_timeOver) {
+
+            System.out.println("PLAY MODE IS IN: " + m_playMode);
+            if (Pattern.matches("^play_on.*", m_playMode)) world.addPercept(VCWorld.play_on);
+
+            if (Pattern.matches("^kick_off_l.*", m_playMode)) world.addPercept(VCWorld.kick_off_l);
+
+            if (Pattern.matches("^kick_off_r.*", m_playMode)) world.addPercept(VCWorld.kick_off_r);
+
+
             boolean ballVisible = false;
             boolean ballInRange = false;
             boolean goalVisible = false;
-            System.out.println("BRAIN SENSING");
+            //System.out.println("BRAIN SENSING");
 
             //ball visible?
             ball = m_memory.getObject("ball");
@@ -91,16 +96,15 @@ class Brain extends Thread implements SensorInput {
 
             if (ball != null && ball.m_direction < 5.0) {
                 if (ball.m_distance < 1.0) {
-                    if (goal != null) {
-                        world.addPercept(VCWorld.ball_in_view_close_goal_not_in_view);
-                    } else {
-                        world.addPercept(VCWorld.ball_in_view_close_goal_in_view);
-                    }
+                    System.out.println("ball_in_view_close");
+                    world.addPercept(VCWorld.ball_in_view_close);
                 } else {
+                    System.out.println("ball_in_view_far");
                     world.addPercept(VCWorld.ball_in_view_far);
                 }
 
             } else {
+                System.out.println("ball_not_in_view");
                 world.addPercept(VCWorld.ball_not_in_view);
             }
 
@@ -137,6 +141,8 @@ class Brain extends Thread implements SensorInput {
     public void hear(int time, String message) {
         if (message.compareTo("time_over") == 0)
             m_timeOver = true;
+        System.out.println("HEARD MESSAGE " + message);
+        m_playMode = message;
 
     }
 
