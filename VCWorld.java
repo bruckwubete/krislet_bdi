@@ -40,7 +40,7 @@ public class VCWorld extends Environment {
     public static final Literal ball_in_my_side = ASSyntax.createLiteral("ball_in_my_side");
 
     //private KrisletContext playerContext;
-    private List<KrisletContext> players = new ArrayList<KrisletContext>(10);
+    private List<KrisletContext> players = new ArrayList<KrisletContext>();
     
     
     public VCWorld() {
@@ -50,6 +50,9 @@ public class VCWorld extends Environment {
         //try {
         //    Thread.sleep(200);
         //} catch (Exception e) {}
+    	for(int i = 0; i<10; i++) {
+        	players.add(null);
+        }
     }
     
     private void joinTeam(String team, int player_num) {
@@ -60,11 +63,11 @@ public class VCWorld extends Environment {
             Thread.sleep(200);
         } catch (Exception e) {}
     }
-
+    
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag + " EXECUTING:  "+action);
-
+        
         synchronized (modelLock) {
             // Change the world model based on action
         	int player_num = Integer.valueOf(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
@@ -82,6 +85,9 @@ public class VCWorld extends Environment {
                     break;
                 case "turn_to_goal":
                 	this.players.get(player_num).player.turn(30);
+                    break;
+                case "kick_start":
+                	this.players.get(player_num).player.kick(40, player_num);
                     break;
                 case "dribble":
                 	this.players.get(player_num).player.kick(10, 0);

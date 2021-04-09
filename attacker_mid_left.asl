@@ -37,7 +37,7 @@ joining_the_game.
 +!attack <- !attack.
 
 //agent decides if a player should pass, kick or dribble
-+!pass_kick_dribble : kick_off_l <- kick_to_goal(0).
++!pass_kick_dribble : kick_off_l <- kick_start(0).
 +!pass_kick_dribble : net_close <- kick_to_goal(0).
 +!pass_kick_dribble : net_far <- dribble(0).
 +!pass_kick_dribble : cant_advance <- pass(0).

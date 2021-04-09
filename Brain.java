@@ -74,8 +74,8 @@ class Brain extends Thread implements SensorInput {
 
         while (!m_timeOver) {
         	
+        	world.clearPercepts();
         	
-        	System.out.println("Beliefe of " + getName() + " is: " + world.getPercepts(getName()));
         	//System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
             if (Pattern.matches("^before_kick_off.*", m_playMode)) {
@@ -167,7 +167,8 @@ class Brain extends Thread implements SensorInput {
             	world.removePercept(VCWorld.net_far);
                 world.removePercept(VCWorld.net_close);
             }
-
+            System.out.println("Beliefe of " + getName() + " is: " + world.getPercepts(getName()));
+            
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
