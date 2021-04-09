@@ -74,7 +74,7 @@ class Brain extends Thread implements SensorInput {
 
         while (!m_timeOver) {
         	
-        	world.clearPercepts();
+        	//world.clearPercepts();
         	
         	//System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
@@ -173,7 +173,7 @@ class Brain extends Thread implements SensorInput {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
             }
-            world.clearPercepts();
+            //world.clearPercepts();
             
         }
         m_krislet.bye();
