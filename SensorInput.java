@@ -28,4 +28,7 @@ public interface SensorInput
     //---------------------------------------------------------------------------
     // This function receives hear information from referee
     public void hear(int time, String message);
+    
+    public ObjectInfo getBall();
+    public ObjectInfo getGoal();
 }

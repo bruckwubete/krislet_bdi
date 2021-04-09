@@ -193,7 +193,13 @@ class Krislet implements SendCommand
     {
     send("(change_view " + angle + " " + quality + ")");
     }
-
+    
+    public ObjectInfo getBall() {
+    	return m_brain.getBall();
+    }
+    public ObjectInfo getGoal() {
+    	return m_brain.getGoal();
+    }
     //---------------------------------------------------------------------------
     // This function sends bye command to the server
     public void bye()

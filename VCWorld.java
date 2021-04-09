@@ -4,6 +4,8 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -20,19 +22,40 @@ public class VCWorld extends Environment {
 
 
     /** constant terms used for perception */
+    public static final Literal before_kick_off = ASSyntax.createLiteral("before_kick_off");
+    public static final Literal goal_l = ASSyntax.createLiteral("goal_l");
+    public static final Literal goal_r = ASSyntax.createLiteral("goal_r");
     public static final Literal play_on = ASSyntax.createLiteral("play_on");
     public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
     public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
     public static final Literal ball_not_in_view = ASSyntax.createLiteral("ball_not_in_view");
     public static final Literal ball_in_view_far = ASSyntax.createLiteral("ball_in_view_far");
     public static final Literal ball_in_view_close = ASSyntax.createLiteral("ball_in_view_close");
+    
+    //net literals
+    public static final Literal net_close = ASSyntax.createLiteral("net_close");
+    public static final Literal net_far = ASSyntax.createLiteral("net_far");
+    public static final Literal cant_see_net = ASSyntax.createLiteral("cant_see_net");
+    
+    public static final Literal ball_in_my_side = ASSyntax.createLiteral("ball_in_my_side");
 
-    private KrisletContext playerContext;
-
+    //private KrisletContext playerContext;
+    private List<KrisletContext> players = new ArrayList<KrisletContext>(10);
+    
+    
     public VCWorld() {
-        clearPercepts();
-        playerContext = new KrisletContext(this);
-        new Thread(playerContext).start();
+        //clearPercepts();
+        //playerContext = new KrisletContext(this,"right");
+        //new Thread(playerContext).start();
+        //try {
+        //    Thread.sleep(200);
+        //} catch (Exception e) {}
+    }
+    
+    private void joinTeam(String team, int player_num) {
+    	clearPercepts();
+        players.add(player_num,new KrisletContext(this,team));
+        new Thread(players.get(player_num)).start();
         try {
             Thread.sleep(200);
         } catch (Exception e) {}
@@ -44,23 +67,38 @@ public class VCWorld extends Environment {
 
         synchronized (modelLock) {
             // Change the world model based on action
+        	int player_num = Integer.valueOf(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
+        	System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
-                    this.playerContext.player.turn(10);
+                	ObjectInfo ball = this.players.get(player_num).player.getBall();
+                	if(ball != null) 
+                		this.players.get(player_num).player.turn(ball.getDirection());
+                	else
+                		this.players.get(player_num).player.turn(40);
                     break;
                 case "dash_to_ball":
-                    this.playerContext.player.dash(100);
+                	this.players.get(player_num).player.dash(100);;
                     break;
                 case "turn_to_goal":
-                    this.playerContext.player.turn(30);
+                	this.players.get(player_num).player.turn(30);
                     break;
+                case "dribble":
+                	this.players.get(player_num).player.kick(10, 0);
                 case "kick_to_goal":
-                    this.playerContext.player.kick(100, 0);
+                	ObjectInfo goal = this.players.get(player_num).player.getGoal();
+                	if(goal != null) 
+                		this.players.get(player_num).player.kick(100,goal.getDirection());
+                	else
+                		this.players.get(player_num).player.kick(100, 0);
                     break;
                 case "move":
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
-                    this.playerContext.player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
+                	this.players.get(player_num).player.move(((NumberTermImpl) (action.getTerms().get(1))).solve(), ((NumberTermImpl) (action.getTerms().get(2))).solve());
                     break;
+                case "join_team":
+                	this.joinTeam(action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
+                	break;
                 default:
                     logger.info("The action " + action + " is not implemented!");
                     return false;

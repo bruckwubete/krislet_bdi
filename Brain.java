@@ -16,6 +16,9 @@ import java.lang.Math;
 import java.util.*;
 import java.util.regex.*;
 
+
+
+
 class Brain extends Thread implements SensorInput {
     //---------------------------------------------------------------------------
     // This constructor:
@@ -37,7 +40,8 @@ class Brain extends Thread implements SensorInput {
         start();
     }
 
-
+    ObjectInfo ball;
+    ObjectInfo goal;
     //---------------------------------------------------------------------------
     // This is main brain function used to make decision
     // In each cycle we decide which command to issue based on
@@ -64,54 +68,112 @@ class Brain extends Thread implements SensorInput {
 
     public void run() {
         ObjectInfo object;
-        ObjectInfo ball;
-        ObjectInfo goal;
-
+        
         float turnAngle = 10;
         float objectDistance = 10;
 
         while (!m_timeOver) {
+        	
+        	
+        	System.out.println("Beliefe of " + getName() + " is: " + world.getPercepts(getName()));
+        	//System.out.println(world.);
+            //System.out.println("PLAY MODE IS IN: " + m_playMode);
+            if (Pattern.matches("^before_kick_off.*", m_playMode)) {
+            	world.clearPercepts();
+            	world.addPercept(VCWorld.before_kick_off);
+            }
+            
+            if (Pattern.matches("^goal_l.*", m_playMode)) {
+            	world.clearPercepts();
+            	world.addPercept(VCWorld.goal_l);
+            }
+            
+            if (Pattern.matches("^goal_r.*", m_playMode)) {
+            	world.clearPercepts();
+            	world.addPercept(VCWorld.goal_r);
+            }
+            
+            if (Pattern.matches("^play_on.*", m_playMode)) {
+            	world.clearPercepts();
+            	world.addPercept(VCWorld.play_on);
+            }
 
-            System.out.println("PLAY MODE IS IN: " + m_playMode);
-            if (Pattern.matches("^play_on.*", m_playMode)) world.addPercept(VCWorld.play_on);
+            if (Pattern.matches("^kick_off_l.*", m_playMode)) {
+            	world.clearPercepts();
+            	world.addPercept(VCWorld.kick_off_l);
+            }
 
-            if (Pattern.matches("^kick_off_l.*", m_playMode)) world.addPercept(VCWorld.kick_off_l);
-
-            if (Pattern.matches("^kick_off_r.*", m_playMode)) world.addPercept(VCWorld.kick_off_r);
-
+            if (Pattern.matches("^kick_off_r.*", m_playMode)) {
+            	world.clearPercepts();
+            	world.addPercept(VCWorld.kick_off_r);
+            }
 
             boolean ballVisible = false;
             boolean ballInRange = false;
             boolean goalVisible = false;
             //System.out.println("BRAIN SENSING");
-
+            
             //ball visible?
             ball = m_memory.getObject("ball");
-
             //goal visible?
             if (m_side == 'l')
                 goal = m_memory.getObject("goal r");
             else
                 goal = m_memory.getObject("goal l");
-
-            if (ball != null && ball.m_direction < 5.0) {
+            
+            if (ball != null && ball.m_direction < 2.0) {
                 if (ball.m_distance < 1.0) {
-                    System.out.println("ball_in_view_close");
                     world.addPercept(VCWorld.ball_in_view_close);
+                    world.removePercept(VCWorld.ball_in_view_far);
+                    world.removePercept(VCWorld.ball_not_in_view);
+                    //world.addPercept(getName(),VCWorld.ball_in_view_close);
+                    //world.removePercept(getName(),VCWorld.ball_in_view_far);
+                    //world.removePercept(getName(),VCWorld.ball_not_in_view);
                 } else {
-                    System.out.println("ball_in_view_far");
+                    //world.addPercept(getName(),VCWorld.ball_in_view_far);
+                    //world.removePercept(getName(),VCWorld.ball_in_view_close);
+                    //world.removePercept(getName(),VCWorld.ball_not_in_view);
                     world.addPercept(VCWorld.ball_in_view_far);
+                    world.removePercept(VCWorld.ball_in_view_close);
+                    world.removePercept(VCWorld.ball_not_in_view);
                 }
 
             } else {
-                System.out.println("ball_not_in_view");
+                //world.addPercept(getName(),VCWorld.ball_not_in_view);
+                //world.removePercept(getName(),VCWorld.ball_in_view_close);
+                //world.removePercept(getName(),VCWorld.ball_in_view_far);
                 world.addPercept(VCWorld.ball_not_in_view);
+                world.removePercept(VCWorld.ball_in_view_close);
+                world.removePercept(VCWorld.ball_in_view_far);
+            }
+            
+            if(goal != null) {
+            	if (goal.getDistance() < 25.0) {
+                    //world.addPercept(getName(),VCWorld.net_close);
+                    //world.removePercept(getName(),VCWorld.net_far);
+                    world.addPercept(VCWorld.net_close);
+                    world.removePercept(VCWorld.net_far);
+                } else {
+                    //world.addPercept(getName(),VCWorld.net_far);
+                    //world.removePercept(getName(),VCWorld.net_close);
+                    world.addPercept(VCWorld.net_far);
+                    world.removePercept(VCWorld.net_close);
+                }
+            }else {
+            	//world.addPercept(getName(),VCWorld.cant_see_net);
+            	//world.removePercept(getName(),VCWorld.net_far);
+                //world.removePercept(getName(),VCWorld.net_close);
+                world.addPercept(VCWorld.cant_see_net);
+            	world.removePercept(VCWorld.net_far);
+                world.removePercept(VCWorld.net_close);
             }
 
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
             }
+            world.clearPercepts();
+            
         }
         m_krislet.bye();
     }
@@ -130,7 +192,12 @@ class Brain extends Thread implements SensorInput {
         m_memory.store(info);
     }
 
-
+    public ObjectInfo getBall() {
+    	return ball;
+    }
+    public ObjectInfo getGoal() {
+    	return goal;
+    }
     //---------------------------------------------------------------------------
     // This function receives hear information from player
     public void hear(int time, int direction, String message) {
