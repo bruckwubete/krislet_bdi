@@ -66,6 +66,10 @@ class Brain extends Thread implements SensorInput {
     // Move to a place on my side on a kick_off
     // ************************************************
 
+    public FlagInfo getFlag(String flagName) {
+        return (FlagInfo) m_memory.getObject(flagName);
+    }
+
     public void run() {
         ObjectInfo object;
         
