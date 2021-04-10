@@ -31,4 +31,5 @@ public interface SensorInput
     
     public ObjectInfo getBall();
     public ObjectInfo getGoal();
+    FlagInfo getFlag(java.lang.String flag_c);
 }

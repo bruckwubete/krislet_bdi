@@ -143,6 +143,136 @@ class Krislet implements SendCommand
     finalize();
     }
 
+    public class Coordinates{
+        private double X;
+        private double Y;
+        public Coordinates(double X, double Y) {
+            this.X = X;
+            this.Y = Y;
+        }
+        public double getX() {
+            return X;
+        }
+        public double getY() {
+            return Y;
+        }
+    }
+    public void getPlayerLocation(){
+        if(m_brain == null) {
+            System.out.println("Brain Not Initialized Yet, Can't determine location");
+            return;
+        }
+        FlagInfo center_flag = m_brain.getFlag("flag c"); // (0,0)
+        FlagInfo center_top_flag = m_brain.getFlag("flag c t"); // (0, -34)
+        FlagInfo center_bottom_flag = m_brain.getFlag("flag c b"); // (0, 34)
+        FlagInfo left_top_flag = m_brain.getFlag("flag l t"); // (-52.54, -34)
+        FlagInfo left_bottom_flag = m_brain.getFlag("flag l b"); // (-52.54, 34)
+        FlagInfo right_top_flag = m_brain.getFlag("flag r t"); // (52.54, -34)
+        FlagInfo right_bottom_flag = m_brain.getFlag("flag r b"); // (52.54, 34)
+        ArrayList<FlagInfo> availableFlags = new ArrayList<FlagInfo>();
+        ArrayList<String> availableFlagNames = new ArrayList<String>();
+        ArrayList<Coordinates> flagCoordinates = new ArrayList<Coordinates>();
+        double x1 = 0;
+        double y1 = 0;
+        String flagName = "flag c";
+        if(center_flag != null) {
+            flagName = "flag c";
+            x1 = 0;
+            y1 = 0;
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(center_top_flag != null) {
+            x1 = 0;
+            y1 = -34;
+            flagName = "flag c t";
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(center_bottom_flag != null) {
+            x1 = 0;
+            y1 = 34;
+            flagName = "flag c b";
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(left_top_flag != null) {
+            x1 = -52.54;
+            y1 = -34;
+            flagName = "flag l t";
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(left_bottom_flag != null) {
+            x1 = -52.54;
+            y1 = 34;
+            flagName = "flag l b";
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(right_top_flag != null) {
+            x1 = 52.54;
+            y1 = -34;
+            flagName = "flag r t";
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(right_bottom_flag != null) {
+            x1 = 52.54;
+            y1 = 34;
+            flagName = "flag r b";
+            availableFlags.add(center_flag);
+            availableFlagNames.add(flagName);
+            flagCoordinates.add(new Coordinates(x1, y1));
+        }
+        if(availableFlags.size() < 2) {
+            System.out.println("Cannot Determine Location, Need at least 2 flags to determine locations");
+        } else if(availableFlags.size() == 2){
+            System.out.println("Number of Flags =======>" + availableFlags.size());
+            FlagInfo firstFlag = availableFlags.get(0);
+            String firstFlagName = availableFlagNames.get(0);
+            Coordinates firstFlagCoods = flagCoordinates.get(0);
+            FlagInfo secondFlag = availableFlags.get(1);
+            String secondFlagName = availableFlagNames.get(1);
+            Coordinates secondFlagCoods = flagCoordinates.get(1);
+        } else {
+        }
+//        x1 = x1 + 52.54;
+//        y1 = y1 + 34;
+//
+//        FlagInfo used_flag =  m_brain.getFlag(flagName);
+//        System.out.println("======= Using "+flagName+" =========");
+//        double distance = used_flag.getDistance();
+//        double direction = used_flag.getDirection();
+//        double direction_radian = Math.toRadians(direction);
+//
+//
+//        System.out.println("Flag Coods  ======>(" + x1 + ", "+y1+")" );
+//        System.out.println("Flag Direction Degree==========>" + direction);
+//        System.out.println("Flag Direction Radian==========>" + direction_radian);
+//        System.out.println("Flag Distance ==========>" + distance);
+//
+//        // Problem in calculating coods here: [Maths Formula]
+//
+//        double y2 = y1 + (distance * Math.sin(direction_radian));
+//        double x2 = x1 + (distance * Math.cos(direction_radian));
+//
+//        if(direction<90 && direction>-90) {
+//             x2 = x1 - (distance * Math.cos(direction_radian));
+//        }
+//
+//        x2 = x2 - 52.54;
+//        y2 = y2 - 34;
+//
+//        System.out.println("Player Coods  ======>(" + x2 + ", "+y2+")" );
+    }
+
 
     //===========================================================================
     // Implementation of SendCommand Interface
@@ -254,6 +384,7 @@ class Krislet implements SendCommand
         VisualInfo  info = new VisualInfo(message);
         info.parse();
         m_brain.see(info);
+        this.getPlayerLocation();
         }
     else if( m.group(1).compareTo("hear") == 0 )
         parseHear(message);
