@@ -1,9 +1,21 @@
-/*
- Jason Exercise: Vacuum Cleaning 1
-*/
+MAS krislet_player {
 
-MAS krislet {
     environment: VCWorld
-    agents: vc;
+    agents:
+		
+		attacker_mid_left;
+		left_wing_left;
+		//right_defence_right;
+		//right_defence_left;
+		//left_defence_right;
+		//left_defence_left;
+		//right_wing_right;
+		//right_wing_left;
+		//left_wing_right;
+		//attacker_mid_right;
+		
+		
+	aslSourcePath:
+		"src/asl";
 }
 
