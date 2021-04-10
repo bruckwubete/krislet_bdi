@@ -8,6 +8,8 @@
 //    Modified by:      Edgar Acosta
 //    Date:             March 4, 2008
 
+import jason.asSyntax.ASSyntax;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,7 +48,24 @@ class Brain extends Thread implements SensorInput {
     ObjectInfo ball;
     ObjectInfo goal;
 
-    FlagInfo rtFlag;
+    FlagInfo rtFlag, rbFlag, ltFlag, lbFlag;
+    HashMap<String, List<String>> relevantObjects = new HashMap<String, List<String>>(){{
+        put("ball", new ArrayList<String>(){{
+            add("");
+        }});
+        put("flag", new ArrayList<String>(){{
+            add(" c "); add(" rt"); add(" rb"); add(" lt"); add(" lb"); add(" ct"); add(" cb");
+            add("glt"); add("glb"); add("grt"); add("grb");
+            add("plt"); add("plc"); add("plb"); add("prt"); add("prc"); add("prb");
+        }});
+        put("goal", new ArrayList<String>(){{
+            add("l"); add("r");
+        }});
+        put("line", new ArrayList<String>(){{
+            add("t"); add("b");; add("l");; add("r");
+        }});
+    }};
+
     double x, y;
     //---------------------------------------------------------------------------
     // This is main brain function used to make decision
@@ -116,84 +135,19 @@ class Brain extends Thread implements SensorInput {
                 world.addPercept(VCWorld.kick_off_r);
             }
 
-            boolean ballVisible = false;
-            boolean ballInRange = false;
-            boolean goalVisible = false;
-            //System.out.println("BRAIN SENSING");
+            relevantObjects.forEach((objName, objValues) -> {
+                objValues.forEach(v -> {
+                    ObjectInfo obj = m_memory.getObject(objName, v);
+                    if(obj != null) {
+                        world.addPercept(m_name, ASSyntax.createLiteral("distance", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_distance)));
+                        world.addPercept(m_name, ASSyntax.createLiteral("direction", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_direction)));
+                        world.addPercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
 
-            //ball visible?
-            ball = m_memory.getObject("ball");
-            //goal visible?
-            if (m_side == 'l')
-                goal = m_memory.getObject("goal r");
-            else
-                goal = m_memory.getObject("goal l");
-
-            if (ball != null && ball.m_direction < 2.0) {
-                if (ball.m_distance < 1.0) {
-                    //world.addPercept(VCWorld.ball_in_view_close);
-                    //world.removePercept(VCWorld.ball_in_view_far);
-                    //world.removePercept(VCWorld.ball_not_in_view);
-                    world.addPercept(m_name,VCWorld.ball_in_view_close);
-                    world.removePercept(m_name,VCWorld.ball_in_view_far);
-                    world.removePercept(m_name,VCWorld.ball_not_in_view);
-                } else {
-                    world.addPercept(m_name,VCWorld.ball_in_view_far);
-                    world.removePercept(m_name,VCWorld.ball_in_view_close);
-                    world.removePercept(m_name,VCWorld.ball_not_in_view);
-                    //world.addPercept(VCWorld.ball_in_view_far);
-                    //world.removePercept(VCWorld.ball_in_view_close);
-                    //world.removePercept(VCWorld.ball_not_in_view);
-                }
-
-            } else {
-                world.addPercept(m_name,VCWorld.ball_not_in_view);
-                world.removePercept(m_name,VCWorld.ball_in_view_close);
-                world.removePercept(m_name,VCWorld.ball_in_view_far);
-                //world.addPercept(VCWorld.ball_not_in_view);
-                //world.removePercept(VCWorld.ball_in_view_close);
-                //world.removePercept(VCWorld.ball_in_view_far);
-            }
-
-            if(goal != null) {
-                if (goal.getDistance() < 25.0) {
-                    world.addPercept(m_name,VCWorld.net_close);
-                    world.removePercept(m_name,VCWorld.net_far);
-                    //world.addPercept(VCWorld.net_close);
-                    //world.removePercept(VCWorld.net_far);
-                } else {
-                    world.addPercept(m_name,VCWorld.net_far);
-                    world.removePercept(m_name,VCWorld.net_close);
-                    //world.addPercept(VCWorld.net_far);
-                    //world.removePercept(VCWorld.net_close);
-                }
-            }else {
-                world.addPercept(m_name,VCWorld.cant_see_net);
-                world.removePercept(m_name,VCWorld.net_far);
-                world.removePercept(m_name,VCWorld.net_close);
-                //world.addPercept(VCWorld.cant_see_net);
-                //world.removePercept(VCWorld.net_far);
-                //world.removePercept(VCWorld.net_close);
-            }
-
-            //System.out.println("Belief of " + m_name + " is: " + world.getPercepts(m_name));
-
-            rtFlag = m_memory.getFlag(" rt");
-            float speedDirection = m_memory.getSpeedDirection();
-            if(rtFlag != null) {
-                float flgDirection = Math.abs(Math.abs(rtFlag.getDirection()) - Math.abs(speedDirection));
-                float flgDistance = rtFlag.getDistance();
-                System.out.println("REAL flgDirection " + flgDirection);
-                if (flgDirection > 90) flgDirection = 180 - flgDirection;
-                System.out.println("flgDirection: " + flgDirection + " flgDistance: " + flgDistance);
-
-                //System.out.println("FOUND RT FLAG AT " + rtFlag.getDistance() + rtFlag.getDirection());
-                x = 105 -  (Math.cos(Math.toRadians(flgDirection)) * flgDistance);
-                y = Math.sin(Math.toRadians(flgDirection)) * flgDistance;
-
-            }
-            System.out.printf("coordinate: (%s, %s)%n", x, y);
-
+                    } else {
+                        world.removePercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
+                    }
+                });
+            });
 
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);

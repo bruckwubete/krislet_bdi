@@ -15,6 +15,7 @@
 
 //  Modified by:    Edgar Acosta
 //  Date:       March 5, 2008
+import javax.sound.sampled.Line;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -26,10 +27,10 @@ class VisualInfo
     public String m_message;
     
     // Split objects into specific lists
-    private Vector<?> m_ball_list;
-    private Vector<?> m_player_list;
+    private Vector<BallInfo> m_ball_list;
+    private Vector<PlayerInfo> m_player_list;
     private Vector<FlagInfo> m_flag_list;
-    private Vector<?> m_goal_list;
+    private Vector<GoalInfo> m_goal_list;
     private Vector<LineInfo> m_line_list;
     
     // Constructor for 'see' information
@@ -37,25 +38,25 @@ class VisualInfo
     {
     info.trim();
     m_message = info;
-    m_player_list = new Vector<Object>(22);
-    m_ball_list = new Vector<Object>(1);
-    m_goal_list = new Vector<Object>(10);
+    m_player_list = new Vector<PlayerInfo>(22);
+    m_ball_list = new Vector<BallInfo>(1);
+    m_goal_list = new Vector<GoalInfo>(10);
     m_line_list = new Vector<LineInfo>(20);
     m_flag_list = new Vector<FlagInfo>(60);
     m_objects = new Vector<ObjectInfo>(113);
     }
     
-    public Vector<?> getBallList()
+    public Vector<BallInfo> getBallList()
     {
     return m_ball_list;
     }
     
-    public Vector<?> getPlayerList()
+    public Vector<PlayerInfo> getPlayerList()
     {
     return m_player_list;
     }
     
-    public Vector<?> getGoalList()
+    public Vector<GoalInfo> getGoalList()
     {
     return m_goal_list;
     }
@@ -159,13 +160,15 @@ class VisualInfo
         case 3: uniformNumber = Integer.parseInt(objectName[2]); //if the player number is available
         case 2: team = p_quote.matcher(objectName[1]).replaceAll(""); //Team Name (remove quotation marks)
         objInfo = new PlayerInfo(team,uniformNumber,goalie);
+        m_player_list.add((PlayerInfo) objInfo);
         break;
-        default: objInfo = new PlayerInfo(); break;
+        default: objInfo = new PlayerInfo(); m_player_list.add((PlayerInfo) objInfo); break;
         }
     } //Ball
     else if(p_ball.matcher(n).matches()) {
         //cSystem.out.println("RECEIVED BALL INFO FROM SERVER" + objectName[1]);
         objInfo = new BallInfo();
+        m_ball_list.add((BallInfo) objInfo);
     }
 
     //Goal
@@ -175,6 +178,7 @@ class VisualInfo
         objInfo = new GoalInfo(objectName[1].charAt(0)); //if there is side info
         else
         objInfo = new GoalInfo();
+        m_goal_list.add((GoalInfo) objInfo);
     } //Line
     else if(p_line.matcher(n).matches()){
         //cSystem.out.println("RECEIVED Line INFO FROM SERVER " + Arrays.toString(objectName));

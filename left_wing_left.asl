@@ -30,7 +30,7 @@ joining_the_game.
 +play_on <- !attack.
 
 +!attack : ball_not_in_view <- turn_to_ball(1); -ball_in_view_far; -ball_in_view_close. //!attack.
-+!attack : ball_in_view_far <- dash_to_ball(1); -ball_in_view_close; -ball_not_in_view. //!attack.
++!attack : ball_in_view_far <- dash(1); -ball_in_view_close; -ball_not_in_view. //!attack.
 +!attack : ball_in_view_close <- -ball_not_in_view; -ball_in_view_far; !pass_kick_dribble. //!attack.
 //default for attack
 +!attack <- !attack.

@@ -27,7 +27,7 @@ before_kick_off.
 //+~ball_in_my_side : play_on <- !attack.    // if the ball is in enemy zone, attack
 
 +!attack : ball_not_in_view <- turn_to_ball.
-+!attack : ball_in_view_far <- dash_to_ball.
++!attack : ball_in_view_far <- dash.
 
 
 +!attack : ball_in_view_close <- kick_to_goal; !attack.

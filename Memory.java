@@ -59,8 +59,27 @@ class Memory
     return null;
     }
 
+    public ObjectInfo getObject(String objType, String name)
+    {
+        if( m_info == null )
+            waitForNewInfo();
+
+        switch (objType) {
+            case "line":
+                return  getLine(name);
+            case "flag":
+                return  getFlag(name);
+            case "ball":
+                return getBall(name);
+            case "goal":
+                return getGoal(name);
+        }
+
+        return null;
+    }
+
     // This function looks for specified line
-    public LineInfo getLine(char kind)
+    public LineInfo getLine(String kind)
     {
         if( m_info == null )
             waitForNewInfo();
@@ -69,8 +88,42 @@ class Memory
 
         for(int c = 0 ; c < m_line_list.size() ; c ++)
         {
-            if(m_line_list.elementAt(c).m_kind == kind)
+            if(kind.equals("" + m_line_list.elementAt(c).m_kind))
                 return m_line_list.elementAt(c);
+        }
+
+        return null;
+    }
+
+    // This function looks for specified line
+    public BallInfo getBall(String kind)
+    {
+        if( m_info == null )
+            waitForNewInfo();
+
+        Vector<BallInfo> m_ball_list = m_info.getBallList();
+
+        for(int c = 0 ; c < m_ball_list.size() ; c ++)
+        {
+            if(kind.equals("" + m_ball_list.elementAt(c).m_type))
+                return m_ball_list.elementAt(c);
+        }
+
+        return null;
+    }
+
+    // This function looks for specified line
+    public GoalInfo getGoal(String kind)
+    {
+        if( m_info == null )
+            waitForNewInfo();
+
+        Vector<GoalInfo> m_goal_list = m_info.getGoalList();
+
+        for(int c = 0 ; c < m_goal_list.size() ; c ++)
+        {
+            if(kind.equals("" + m_goal_list.elementAt(c).getSide()))
+                return m_goal_list.elementAt(c);
         }
 
         return null;
@@ -87,8 +140,8 @@ class Memory
         for(int c = 0 ; c < m_flag_list.size() ; c ++)
         {
             FlagInfo e = m_flag_list.elementAt(c);
-            String eKind = "" + e.m_type + e.m_pos1 + e.m_pos2;
-            if(eKind.equals(kind))
+            String eKind = "" + e.m_type + e.m_pos1 + e.m_pos2 + e.m_num;
+            if(eKind.equals(kind + "0"))
                 return m_flag_list.elementAt(c);
         }
 

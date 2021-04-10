@@ -5,6 +5,7 @@ import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -39,29 +40,19 @@ public class VCWorld extends Environment {
     
     public static final Literal ball_in_my_side = ASSyntax.createLiteral("ball_in_my_side");
 
-    //private KrisletContext playerContext;
-    private List<KrisletContext> players = new ArrayList<KrisletContext>();
+    private HashMap<String, KrisletContext> players = new HashMap<String, KrisletContext>();
+
     
     
-    public VCWorld() {
-        //clearPercepts();
-        //playerContext = new KrisletContext(this,"right");
-        //new Thread(playerContext).start();
-        //try {
-        //    Thread.sleep(200);
-        //} catch (Exception e) {}
-    	for(int i = 0; i<10; i++) {
-        	players.add(null);
-        }
-    }
+    public VCWorld() {}
     
     private void joinTeam(String ag, String team, int player_num) {
     	clearPercepts();
-        players.set(player_num,new KrisletContext(ag,this,team));
-        new Thread(players.get(player_num)).start();
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {}
+        players.put(ag, new KrisletContext(ag,this,team));
+        new Thread(players.get(ag)).start();
+//        try {
+//            Thread.sleep(200);
+//        } catch (Exception e) {}
     }
 
     @Override
@@ -74,33 +65,34 @@ public class VCWorld extends Environment {
         	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
-                	ObjectInfo ball = this.players.get(player_num).player.getBall();
+                	ObjectInfo ball = this.players.get(ag).player.getBall();
                 	if(ball != null) 
-                		this.players.get(player_num).player.turn(ball.getDirection());
+                		this.players.get(ag).player.turn(ball.getDirection());
                 	else
-                		this.players.get(player_num).player.turn(40);
+                		this.players.get(ag).player.turn(40);
                     break;
-                case "dash_to_ball":
-                	this.players.get(player_num).player.dash(300);;
+                case "dash":
+                	this.players.get(ag).player.dash(300);;
                     break;
                 case "turn_to_goal":
-                	this.players.get(player_num).player.turn(30);
+                	this.players.get(ag).player.turn(30);
                     break;
                 case "kick_start":
-                	this.players.get(player_num).player.kick(40, 40);
+                	this.players.get(ag).player.kick(40, 40);
                     break;
                 case "dribble":
-                	this.players.get(player_num).player.kick(10, 0);
+                	this.players.get(ag).player.kick(10, 0);
                 case "kick_to_goal":
-                	ObjectInfo goal = this.players.get(player_num).player.getGoal();
+                	ObjectInfo goal = this.players.get(ag).player.getGoal();
                 	if(goal != null) 
-                		this.players.get(player_num).player.kick(100,goal.getDirection());
+                		this.players.get(ag).player.kick(100,goal.getDirection());
                 	else
-                		this.players.get(player_num).player.kick(100, 0);
+                		this.players.get(ag).player.kick(100, 0);
                     break;
                 case "move":
+                    waitForPlay(ag);
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
-                	this.players.get(player_num).player.move(((NumberTermImpl) (action.getTerms().get(1))).solve(), ((NumberTermImpl) (action.getTerms().get(2))).solve());
+                	this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(1))).solve(), ((NumberTermImpl) (action.getTerms().get(2))).solve());
                     break;
                 case "move_too":
                 	//calculate player pos
@@ -133,6 +125,16 @@ public class VCWorld extends Environment {
 
         clearPercepts(); // resets perceptions. Percepts are set by brain
         return true;
+    }
+
+    private void waitForPlay(String ag) {
+        while (this.players.get(ag).player == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

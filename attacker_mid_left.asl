@@ -30,28 +30,27 @@ joining_the_game.
 +play_on <- !attack.
 
 
-+!attack : ball_not_in_view <- turn_to_ball(0). //!attack.
-+!attack : ball_in_view_far <- dash_to_ball(0). //!attack.
-+!attack : ball_in_view_close <- !pass_kick_dribble. //!attack.
++!attack : not(viz("ball", "")) <- turn_to_ball(0). //!attack.
++!attack : viz("ball", "") & distance("ball", "", X) & X > 1.0 <- dash(0). //!attack.
++!attack : viz("ball", "") & distance("ball", "", X) & X < 1.0 <- !pass_kick_dribble. //!attack.
 //default for attack
 +!attack <- !attack.
 
 //agent decides if a player should pass, kick or dribble
 +!pass_kick_dribble : kick_off_l <- kick_start(0).
-+!pass_kick_dribble : net_close <- kick_to_goal(0).
-+!pass_kick_dribble : net_far <- dribble(0).
++!pass_kick_dribble : viz("goal", "r") & distance("goal", "r", X) & X < 25.0  <- kick_to_goal(0).
++!pass_kick_dribble : viz("goal", "r") & distance("goal", "r", X) & X > 25.0 <- dribble(0).
 +!pass_kick_dribble : cant_advance <- pass(0).
-+!pass_kick_dribble : cant_see_net <- !turn_to_g.
++!pass_kick_dribble : not(viz("goal", "r")) <- !turn_to_g.
 //default for +!pass_kick_dribble
 +!pass_kick_dribble <- !attack.
 
-+!turn_to_g : cant_see_net <- turn_to_goal(0); !turn_to_g.
-+!turn_to_g : net_close <- !pass_kick_dribble.
-+!turn_to_g : net_far <- !pass_kick_dribble.
++!turn_to_g : not(viz("goal", "r")) <- turn_to_goal(0); !turn_to_g.
++!turn_to_g : viz("goal", "r") <- !pass_kick_dribble.
 +!turn_to_g <- !turn_to_g.
 //defence
 +!defence <- !wait_for_pass; move_too(1,0,0). //middle of the field
 //wait for pass
-+!wait_for_pass : ball_not_in_view <- turn_to_ball(0).
-+!wait_for_pass : ball_in_view_close <- dribble(0).
++!wait_for_pass : not(viz("ball", "")) <- turn_to_ball(0).
++!wait_for_pass : viz("ball", "") & distance("ball", X < 1.0) <- dribble(0).
 +!wait_for_pass <- turn_to_ball(0).

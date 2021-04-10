@@ -22,12 +22,16 @@ public class KrisletContext implements Runnable {
             String  hostName = new String("");
             int         port = 6000;
             //String  team = new String("Krislet3");
+
             this.player = new Krislet(InetAddress.getByName(hostName), port, team, name);
 
             // enter main loop
             this.player.mainLoop(world,name);
 
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
+        }
     }
     
 };
