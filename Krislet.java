@@ -241,24 +241,22 @@ class Krislet implements SendCommand
     //---------------------------------------------------------------------------
     // This function parses sensor information
     private void parseSensorInformation(String message)
-    throws IOException
-    {
-    // First check kind of information      
-    Matcher m=message_pattern.matcher(message);
+    throws IOException {
+        // First check kind of information
+        Matcher m = message_pattern.matcher(message);
         // System.out.println(message);
-    if(!m.matches())
-        {
-        throw new IOException(message);
+        if (!m.matches()) {
+            throw new IOException(message);
         }
-    if( m.group(1).compareTo("see") == 0 )
-        {
-        // System.out.println("RECEIVED SEE INFO FROM SERVER" + message);
-        VisualInfo  info = new VisualInfo(message);
-        info.parse();
-        m_brain.see(info);
-        }
-    else if( m.group(1).compareTo("hear") == 0 )
-        parseHear(message);
+        if (m.group(1).compareTo("see") == 0) {
+            // System.out.println("RECEIVED SEE INFO FROM SERVER" + message);
+            VisualInfo info = new VisualInfo(message);
+            info.parse();
+            m_brain.see(info);
+        } else if (m.group(1).compareTo("hear") == 0)
+            parseHear(message);
+        else if (m.group(1).compareTo("sense_body") == 0)
+            System.out.println("GOT SENSE BODY MESSAGE: " + message);
     }
 
 

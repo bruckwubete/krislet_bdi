@@ -81,13 +81,13 @@ public class VCWorld extends Environment {
                 		this.players.get(player_num).player.turn(40);
                     break;
                 case "dash_to_ball":
-                	this.players.get(player_num).player.dash(100);;
+                	this.players.get(player_num).player.dash(300);;
                     break;
                 case "turn_to_goal":
                 	this.players.get(player_num).player.turn(30);
                     break;
                 case "kick_start":
-                	this.players.get(player_num).player.kick(40,player_num);
+                	this.players.get(player_num).player.kick(40, 40);
                     break;
                 case "dribble":
                 	this.players.get(player_num).player.kick(10, 0);

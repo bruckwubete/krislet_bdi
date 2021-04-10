@@ -57,7 +57,7 @@ class Memory
     }
 
     // This function looks for specified line
-    public FlagInfo getLine(String kind)
+    public FlagInfo getFlag(String kind)
     {
         if( m_info == null )
             waitForNewInfo();

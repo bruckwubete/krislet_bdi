@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.lang.Math;
 import java.util.*;
 import java.util.regex.*;
-
+import java.lang.*;
 
 
 
@@ -45,6 +45,9 @@ class Brain extends Thread implements SensorInput {
 
     ObjectInfo ball;
     ObjectInfo goal;
+
+    FlagInfo rtFlag;
+    double x, y;
     //---------------------------------------------------------------------------
     // This is main brain function used to make decision
     // In each cycle we decide which command to issue based on
@@ -76,6 +79,8 @@ class Brain extends Thread implements SensorInput {
         float objectDistance = 10;
 
         while (!m_timeOver) {
+
+            world.clearPercepts(m_name);
 
 
 
@@ -171,7 +176,20 @@ class Brain extends Thread implements SensorInput {
                 //world.removePercept(VCWorld.net_close);
             }
 
-            System.out.println("Beliefe of " + m_name + " is: " + world.getPercepts(m_name));
+            //System.out.println("Belief of " + m_name + " is: " + world.getPercepts(m_name));
+
+            rtFlag = m_memory.getFlag(" rt");
+            if(rtFlag != null) {
+                float flgDirection = rtFlag.getDirection();
+                float flgDistance = rtFlag.getDistance();
+                System.out.println("flgDirection: " + flgDirection + " flgDistance: " + flgDistance);
+                //System.out.println("FOUND RT FLAG AT " + rtFlag.getDistance() + rtFlag.getDirection());
+                x = 105 -  (Math.cos(Math.abs(Math.toRadians(flgDirection))) * flgDistance);
+                y = Math.sin(Math.abs(Math.toRadians(flgDirection))) * flgDistance;
+
+            }
+            System.out.printf("coordinate: (%s, %s)%n", x, y);
+
 
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
