@@ -93,15 +93,15 @@ class Krislet implements SendCommand
         }
 
     Krislet player = new Krislet(InetAddress.getByName(hostName),
-                     port, team);
+                     port, team, "");
 
     // enter main loop
-    player.mainLoop(null);
+    player.mainLoop(null,"");
     }  
 
     //---------------------------------------------------------------------------
     // This constructor opens socket for  connection with server
-    public Krislet(InetAddress host, int port, String team)
+    public Krislet(InetAddress host, int port, String team, String ag)
     throws SocketException
     {
     m_socket = new DatagramSocket();
@@ -124,7 +124,7 @@ class Krislet implements SendCommand
 
     //---------------------------------------------------------------------------
     // This is main loop for player
-    protected void mainLoop(VCWorld world) throws IOException
+    protected void mainLoop(VCWorld world,String ag) throws IOException
     {
     byte[] buffer = new byte[MSG_SIZE];
     DatagramPacket packet = new DatagramPacket(buffer, MSG_SIZE);
@@ -133,7 +133,7 @@ class Krislet implements SendCommand
     init();
 
     m_socket.receive(packet);
-    parseInitCommand(world, new String(buffer));
+    parseInitCommand(world, new String(buffer),ag);
     m_port = packet.getPort();
 
     // Now we should be connected to the server
@@ -210,7 +210,7 @@ class Krislet implements SendCommand
 
     //---------------------------------------------------------------------------
     // This function parses initial message from the server
-    protected void parseInitCommand(VCWorld world, String message)
+    protected void parseInitCommand(VCWorld world, String message,String ag)
     throws IOException
     {
     Matcher m = Pattern.compile("^\\(init\\s(\\w)\\s(\\d{1,2})\\s(\\w+?)\\).*$").matcher(message);
@@ -221,10 +221,10 @@ class Krislet implements SendCommand
 
     // initialize player's brain
     m_brain = new Brain(world,this,
-                m_team, 
+                m_team,
                 m.group(1).charAt(0),
                 Integer.parseInt(m.group(2)),
-                m.group(3));
+                m.group(3), ag);
     }
 
 

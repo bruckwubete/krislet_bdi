@@ -55,9 +55,9 @@ public class VCWorld extends Environment {
         }
     }
     
-    private void joinTeam(String team, int player_num) {
+    private void joinTeam(String ag, String team, int player_num) {
     	clearPercepts();
-        players.add(player_num,new KrisletContext(this,team));
+        players.add(player_num,new KrisletContext(ag,this,team));
         new Thread(players.get(player_num)).start();
         try {
             Thread.sleep(200);
@@ -87,7 +87,7 @@ public class VCWorld extends Environment {
                 	this.players.get(player_num).player.turn(30);
                     break;
                 case "kick_start":
-                	this.players.get(player_num).player.kick(40, player_num);
+                	this.players.get(player_num).player.kick(40,40);
                     break;
                 case "dribble":
                 	this.players.get(player_num).player.kick(10, 0);
@@ -102,8 +102,23 @@ public class VCWorld extends Environment {
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
                 	this.players.get(player_num).player.move(((NumberTermImpl) (action.getTerms().get(1))).solve(), ((NumberTermImpl) (action.getTerms().get(2))).solve());
                     break;
+                case "move_too":
+                	//calculate player pos
+                	
+                	//turn to point 
+                	
+                	//dash
+                	
+                	//calc player new pos
+                	
+                	//if there world.addpercept(there)
+                	
+                	break;
                 case "join_team":
-                	this.joinTeam(action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
+                	this.joinTeam(ag,action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
+                	break;
+                case "print":
+                	System.out.println("AAAAAAAAAAAAAAA" +action.getTerms());
                 	break;
                 default:
                     logger.info("The action " + action + " is not implemented!");

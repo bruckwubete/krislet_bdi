@@ -28,15 +28,18 @@ class Brain extends Thread implements SensorInput {
                  String team,
                  char side,
                  int number,
-                 String playMode) {
+                 String playMode, String ag) {
         this.world = world;
         m_timeOver = false;
         m_krislet = krislet;
         m_memory = new Memory();
-        //m_team = team;
+        m_team = team;
         m_side = side;
-        // m_number = number;
+        m_number = number;
         m_playMode = playMode;
+        m_name = ag;
+        
+        System.out.println("Name: "+m_name);
         start();
     }
 
@@ -74,7 +77,7 @@ class Brain extends Thread implements SensorInput {
 
         while (!m_timeOver) {
         	
-        	//world.clearPercepts();
+        	
         	
         	//System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
@@ -123,57 +126,58 @@ class Brain extends Thread implements SensorInput {
             
             if (ball != null && ball.m_direction < 2.0) {
                 if (ball.m_distance < 1.0) {
-                    world.addPercept(VCWorld.ball_in_view_close);
-                    world.removePercept(VCWorld.ball_in_view_far);
-                    world.removePercept(VCWorld.ball_not_in_view);
-                    //world.addPercept(getName(),VCWorld.ball_in_view_close);
-                    //world.removePercept(getName(),VCWorld.ball_in_view_far);
-                    //world.removePercept(getName(),VCWorld.ball_not_in_view);
+                    //world.addPercept(VCWorld.ball_in_view_close);
+                    //world.removePercept(VCWorld.ball_in_view_far);
+                    //world.removePercept(VCWorld.ball_not_in_view);
+                    world.addPercept(m_name,VCWorld.ball_in_view_close);
+                    world.removePercept(m_name,VCWorld.ball_in_view_far);
+                    world.removePercept(m_name,VCWorld.ball_not_in_view);
                 } else {
-                    //world.addPercept(getName(),VCWorld.ball_in_view_far);
-                    //world.removePercept(getName(),VCWorld.ball_in_view_close);
-                    //world.removePercept(getName(),VCWorld.ball_not_in_view);
-                    world.addPercept(VCWorld.ball_in_view_far);
-                    world.removePercept(VCWorld.ball_in_view_close);
-                    world.removePercept(VCWorld.ball_not_in_view);
+                    world.addPercept(m_name,VCWorld.ball_in_view_far);
+                    world.removePercept(m_name,VCWorld.ball_in_view_close);
+                    world.removePercept(m_name,VCWorld.ball_not_in_view);
+                    //world.addPercept(VCWorld.ball_in_view_far);
+                    //world.removePercept(VCWorld.ball_in_view_close);
+                    //world.removePercept(VCWorld.ball_not_in_view);
                 }
 
             } else {
-                //world.addPercept(getName(),VCWorld.ball_not_in_view);
-                //world.removePercept(getName(),VCWorld.ball_in_view_close);
-                //world.removePercept(getName(),VCWorld.ball_in_view_far);
-                world.addPercept(VCWorld.ball_not_in_view);
-                world.removePercept(VCWorld.ball_in_view_close);
-                world.removePercept(VCWorld.ball_in_view_far);
+                world.addPercept(m_name,VCWorld.ball_not_in_view);
+                world.removePercept(m_name,VCWorld.ball_in_view_close);
+                world.removePercept(m_name,VCWorld.ball_in_view_far);
+                //world.addPercept(VCWorld.ball_not_in_view);
+                //world.removePercept(VCWorld.ball_in_view_close);
+                //world.removePercept(VCWorld.ball_in_view_far);
             }
             
             if(goal != null) {
             	if (goal.getDistance() < 25.0) {
-                    //world.addPercept(getName(),VCWorld.net_close);
-                    //world.removePercept(getName(),VCWorld.net_far);
-                    world.addPercept(VCWorld.net_close);
-                    world.removePercept(VCWorld.net_far);
+                    world.addPercept(m_name,VCWorld.net_close);
+                    world.removePercept(m_name,VCWorld.net_far);
+                    //world.addPercept(VCWorld.net_close);
+                    //world.removePercept(VCWorld.net_far);
                 } else {
-                    //world.addPercept(getName(),VCWorld.net_far);
-                    //world.removePercept(getName(),VCWorld.net_close);
-                    world.addPercept(VCWorld.net_far);
-                    world.removePercept(VCWorld.net_close);
+                    world.addPercept(m_name,VCWorld.net_far);
+                    world.removePercept(m_name,VCWorld.net_close);
+                    //world.addPercept(VCWorld.net_far);
+                    //world.removePercept(VCWorld.net_close);
                 }
             }else {
-            	//world.addPercept(getName(),VCWorld.cant_see_net);
-            	//world.removePercept(getName(),VCWorld.net_far);
-                //world.removePercept(getName(),VCWorld.net_close);
-                world.addPercept(VCWorld.cant_see_net);
-            	world.removePercept(VCWorld.net_far);
-                world.removePercept(VCWorld.net_close);
+            	world.addPercept(m_name,VCWorld.cant_see_net);
+            	world.removePercept(m_name,VCWorld.net_far);
+                world.removePercept(m_name,VCWorld.net_close);
+                //world.addPercept(VCWorld.cant_see_net);
+            	//world.removePercept(VCWorld.net_far);
+                //world.removePercept(VCWorld.net_close);
             }
-            System.out.println("Beliefe of " + getName() + " is: " + world.getPercepts(getName()));
+            
+            System.out.println("Beliefe of " + m_name + " is: " + world.getPercepts(m_name));
             
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
             }
-            //world.clearPercepts();
+            
             
         }
         m_krislet.bye();
@@ -223,6 +227,9 @@ class Brain extends Thread implements SensorInput {
     volatile private boolean m_timeOver;
     private String m_playMode;
     private VCWorld world;
+    private String m_name;
+    private String m_team;
+    private int m_number;
 
     //helper
     private boolean stringToBool(String string) throws Exception {
