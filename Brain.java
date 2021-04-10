@@ -38,7 +38,7 @@ class Brain extends Thread implements SensorInput {
         m_number = number;
         m_playMode = playMode;
         m_name = ag;
-        
+
         System.out.println("Name: "+m_name);
         start();
     }
@@ -71,51 +71,51 @@ class Brain extends Thread implements SensorInput {
 
     public void run() {
         ObjectInfo object;
-        
+
         float turnAngle = 10;
         float objectDistance = 10;
 
         while (!m_timeOver) {
-        	
-        	
-        	
-        	//System.out.println(world.);
+
+
+
+            //System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
             if (Pattern.matches("^before_kick_off.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.before_kick_off);
+                world.clearPercepts();
+                world.addPercept(VCWorld.before_kick_off);
             }
-            
+
             if (Pattern.matches("^goal_l.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.goal_l);
+                world.clearPercepts();
+                world.addPercept(VCWorld.goal_l);
             }
-            
+
             if (Pattern.matches("^goal_r.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.goal_r);
+                world.clearPercepts();
+                world.addPercept(VCWorld.goal_r);
             }
-            
+
             if (Pattern.matches("^play_on.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.play_on);
+                world.clearPercepts();
+                world.addPercept(VCWorld.play_on);
             }
 
             if (Pattern.matches("^kick_off_l.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.kick_off_l);
+                world.clearPercepts();
+                world.addPercept(VCWorld.kick_off_l);
             }
 
             if (Pattern.matches("^kick_off_r.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.kick_off_r);
+                world.clearPercepts();
+                world.addPercept(VCWorld.kick_off_r);
             }
 
             boolean ballVisible = false;
             boolean ballInRange = false;
             boolean goalVisible = false;
             //System.out.println("BRAIN SENSING");
-            
+
             //ball visible?
             ball = m_memory.getObject("ball");
             //goal visible?
@@ -123,7 +123,7 @@ class Brain extends Thread implements SensorInput {
                 goal = m_memory.getObject("goal r");
             else
                 goal = m_memory.getObject("goal l");
-            
+
             if (ball != null && ball.m_direction < 2.0) {
                 if (ball.m_distance < 1.0) {
                     //world.addPercept(VCWorld.ball_in_view_close);
@@ -149,9 +149,9 @@ class Brain extends Thread implements SensorInput {
                 //world.removePercept(VCWorld.ball_in_view_close);
                 //world.removePercept(VCWorld.ball_in_view_far);
             }
-            
+
             if(goal != null) {
-            	if (goal.getDistance() < 25.0) {
+                if (goal.getDistance() < 25.0) {
                     world.addPercept(m_name,VCWorld.net_close);
                     world.removePercept(m_name,VCWorld.net_far);
                     //world.addPercept(VCWorld.net_close);
@@ -163,22 +163,22 @@ class Brain extends Thread implements SensorInput {
                     //world.removePercept(VCWorld.net_close);
                 }
             }else {
-            	world.addPercept(m_name,VCWorld.cant_see_net);
-            	world.removePercept(m_name,VCWorld.net_far);
+                world.addPercept(m_name,VCWorld.cant_see_net);
+                world.removePercept(m_name,VCWorld.net_far);
                 world.removePercept(m_name,VCWorld.net_close);
                 //world.addPercept(VCWorld.cant_see_net);
-            	//world.removePercept(VCWorld.net_far);
+                //world.removePercept(VCWorld.net_far);
                 //world.removePercept(VCWorld.net_close);
             }
-            
+
             System.out.println("Beliefe of " + m_name + " is: " + world.getPercepts(m_name));
-            
+
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
             }
-            
-            
+
+
         }
         m_krislet.bye();
     }
@@ -198,10 +198,10 @@ class Brain extends Thread implements SensorInput {
     }
 
     public ObjectInfo getBall() {
-    	return ball;
+        return ball;
     }
     public ObjectInfo getGoal() {
-    	return goal;
+        return goal;
     }
     //---------------------------------------------------------------------------
     // This function receives hear information from player

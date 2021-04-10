@@ -245,12 +245,14 @@ class Krislet implements SendCommand
     {
     // First check kind of information      
     Matcher m=message_pattern.matcher(message);
+        // System.out.println(message);
     if(!m.matches())
         {
         throw new IOException(message);
         }
     if( m.group(1).compareTo("see") == 0 )
         {
+        // System.out.println("RECEIVED SEE INFO FROM SERVER" + message);
         VisualInfo  info = new VisualInfo(message);
         info.parse();
         m_brain.see(info);

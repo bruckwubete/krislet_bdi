@@ -63,15 +63,15 @@ public class VCWorld extends Environment {
             Thread.sleep(200);
         } catch (Exception e) {}
     }
-    
+
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag + " EXECUTING:  "+action);
-        
+
         synchronized (modelLock) {
             // Change the world model based on action
         	int player_num = Integer.valueOf(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
-        	System.out.println(player_num);
+        	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
                 	ObjectInfo ball = this.players.get(player_num).player.getBall();
@@ -104,18 +104,18 @@ public class VCWorld extends Environment {
                     break;
                 case "move_too":
                 	//calculate player pos
-                	
-                	//turn to point 
-                	
+
+                	//turn to point
+
                 	//dash
-                	
+
                 	//calc player new pos
-                	
+
                 	//if there world.addpercept(there)
-                	
+
                 	break;
                 case "join_team":
-                	this.joinTeam(ag,action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
+                	this.joinTeam(ag, action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
                 	break;
                 case "print":
                 	System.out.println("AAAAAAAAAAAAAAA" +action.getTerms());

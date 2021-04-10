@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 //
 //  File:           Memory.java
 //  Author:     Krzysztof Langner
@@ -35,6 +37,23 @@ class Memory
         }                                                
 
     return null;
+    }
+
+    // This function looks for specified line
+    public LineInfo getLine(char kind)
+    {
+        if( m_info == null )
+            waitForNewInfo();
+
+        Vector<LineInfo> m_line_list = m_info.getLineList();
+
+        for(int c = 0 ; c < m_line_list.size() ; c ++)
+        {
+            if(m_line_list.elementAt(c).m_kind == kind)
+                return m_line_list.elementAt(c);
+        }
+
+        return null;
     }
 
 

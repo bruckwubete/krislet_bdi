@@ -230,6 +230,7 @@ class LineInfo extends ObjectInfo
   public LineInfo(char kind)
   {
     super("line");
+    // System.out.println("FOUND Line: " + kind);
     m_kind = kind;
   }
 }
