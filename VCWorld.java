@@ -29,16 +29,6 @@ public class VCWorld extends Environment {
     public static final Literal play_on = ASSyntax.createLiteral("play_on");
     public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
     public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
-    public static final Literal ball_not_in_view = ASSyntax.createLiteral("ball_not_in_view");
-    public static final Literal ball_in_view_far = ASSyntax.createLiteral("ball_in_view_far");
-    public static final Literal ball_in_view_close = ASSyntax.createLiteral("ball_in_view_close");
-    
-    //net literals
-    public static final Literal net_close = ASSyntax.createLiteral("net_close");
-    public static final Literal net_far = ASSyntax.createLiteral("net_far");
-    public static final Literal cant_see_net = ASSyntax.createLiteral("cant_see_net");
-    
-    public static final Literal ball_in_my_side = ASSyntax.createLiteral("ball_in_my_side");
 
     private HashMap<String, KrisletContext> players = new HashMap<String, KrisletContext>();
 
@@ -65,7 +55,7 @@ public class VCWorld extends Environment {
         	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
-                	ObjectInfo ball = this.players.get(ag).player.getBall();
+                	ObjectInfo ball = this.players.get(ag).player.getBall(); //TODO: try to do this in BDI
                 	if(ball != null) 
                 		this.players.get(ag).player.turn(ball.getDirection());
                 	else

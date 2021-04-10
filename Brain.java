@@ -106,32 +106,32 @@ class Brain extends Thread implements SensorInput {
             //System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
             if (Pattern.matches("^before_kick_off.*", m_playMode)) {
-                world.clearPercepts();
+                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.before_kick_off);
             }
 
             if (Pattern.matches("^goal_l.*", m_playMode)) {
-                world.clearPercepts();
+                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.goal_l);
             }
 
             if (Pattern.matches("^goal_r.*", m_playMode)) {
-                world.clearPercepts();
+                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.goal_r);
             }
 
             if (Pattern.matches("^play_on.*", m_playMode)) {
-                world.clearPercepts();
+                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.play_on);
             }
 
             if (Pattern.matches("^kick_off_l.*", m_playMode)) {
-                world.clearPercepts();
+                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.kick_off_l);
             }
 
             if (Pattern.matches("^kick_off_r.*", m_playMode)) {
-                world.clearPercepts();
+                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.kick_off_r);
             }
 
@@ -139,6 +139,9 @@ class Brain extends Thread implements SensorInput {
                 objValues.forEach(v -> {
                     ObjectInfo obj = m_memory.getObject(objName, v);
                     if(obj != null) {
+                        if (objName == "ball") {
+                            ball = obj;
+                        }
                         world.addPercept(m_name, ASSyntax.createLiteral("distance", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_distance)));
                         world.addPercept(m_name, ASSyntax.createLiteral("direction", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_direction)));
                         world.addPercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
