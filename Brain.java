@@ -179,13 +179,17 @@ class Brain extends Thread implements SensorInput {
             //System.out.println("Belief of " + m_name + " is: " + world.getPercepts(m_name));
 
             rtFlag = m_memory.getFlag(" rt");
+            float speedDirection = m_memory.getSpeedDirection();
             if(rtFlag != null) {
-                float flgDirection = rtFlag.getDirection();
+                float flgDirection = Math.abs(Math.abs(rtFlag.getDirection()) - Math.abs(speedDirection));
                 float flgDistance = rtFlag.getDistance();
+                System.out.println("REAL flgDirection " + flgDirection);
+                if (flgDirection > 90) flgDirection = 180 - flgDirection;
                 System.out.println("flgDirection: " + flgDirection + " flgDistance: " + flgDistance);
+
                 //System.out.println("FOUND RT FLAG AT " + rtFlag.getDistance() + rtFlag.getDirection());
-                x = 105 -  (Math.cos(Math.abs(Math.toRadians(flgDirection))) * flgDistance);
-                y = Math.sin(Math.abs(Math.toRadians(flgDirection))) * flgDistance;
+                x = 105 -  (Math.cos(Math.toRadians(flgDirection)) * flgDistance);
+                y = Math.sin(Math.toRadians(flgDirection)) * flgDistance;
 
             }
             System.out.printf("coordinate: (%s, %s)%n", x, y);
@@ -213,6 +217,9 @@ class Brain extends Thread implements SensorInput {
     // This function sends see information
     public void see(VisualInfo info) {
         m_memory.store(info);
+    }
+    public void setSpeedDirection(Float d) {
+        m_memory.storeSpeedDirection(d);
     }
 
     public ObjectInfo getBall() {

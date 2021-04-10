@@ -21,6 +21,26 @@ class Memory
     {
     m_info = info;
     }
+    public void storeSpeedDirection(Float d)
+    {
+        speedDirection = d;
+    }
+    public float getSpeedDirection()
+    {
+        while(speedDirection == null)
+        {
+            // We can get information faster then 75 miliseconds
+            try
+            {
+                Thread.sleep(SIMULATOR_STEP);
+            }
+            catch(Exception e)
+            {
+            }
+        }
+        return speedDirection;
+    }
+
 
     //---------------------------------------------------------------------------
     // This function looks for specified object
@@ -100,6 +120,7 @@ class Memory
     //===========================================================================
     // Private members
     volatile private VisualInfo m_info; // place where all information is stored
+    volatile private Float speedDirection;
     final static int SIMULATOR_STEP = 100;
 }
 

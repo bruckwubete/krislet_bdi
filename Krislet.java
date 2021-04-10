@@ -255,8 +255,15 @@ class Krislet implements SendCommand
             m_brain.see(info);
         } else if (m.group(1).compareTo("hear") == 0)
             parseHear(message);
-        else if (m.group(1).compareTo("sense_body") == 0)
-            System.out.println("GOT SENSE BODY MESSAGE: " + message);
+        else if (m.group(1).compareTo("sense_body") == 0) {
+            //System.out.println("GOT SENSE BODY MESSAGE: " + message);
+            int indexOfSpeed = message.indexOf("speed");
+            String speeds = message.substring(indexOfSpeed+6, message.indexOf(")", indexOfSpeed+6));
+            //System.out.println("INDEX OF SPEED: " + indexOfSpeed + "SPEED IS " + speeds);
+            float direction = Float.parseFloat(speeds.split(" ")[1]);
+            //System.out.println("SPEED DIRECTION IS: " + direction);
+            m_brain.setSpeedDirection(new Float(direction));
+        }
     }
 
 

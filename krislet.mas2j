@@ -4,7 +4,7 @@ MAS krislet_player {
     agents:
 
 		attacker_mid_left;
-		left_wing_left;
+		//left_wing_left;
 		//right_defence_right;
 		//right_defence_left;
 		//left_defence_right;
