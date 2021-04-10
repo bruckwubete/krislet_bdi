@@ -57,7 +57,7 @@ public class VCWorld extends Environment {
     
     private void joinTeam(String ag, String team, int player_num) {
     	clearPercepts();
-        players.add(player_num,new KrisletContext(ag,this,team));
+        players.set(player_num,new KrisletContext(ag,this,team));
         new Thread(players.get(player_num)).start();
         try {
             Thread.sleep(200);
@@ -70,7 +70,7 @@ public class VCWorld extends Environment {
 
         synchronized (modelLock) {
             // Change the world model based on action
-        	int player_num = Integer.valueOf(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
+        	int player_num = Integer.parseInt(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
         	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
@@ -87,7 +87,7 @@ public class VCWorld extends Environment {
                 	this.players.get(player_num).player.turn(30);
                     break;
                 case "kick_start":
-                	this.players.get(player_num).player.kick(40,40);
+                	this.players.get(player_num).player.kick(40,player_num);
                     break;
                 case "dribble":
                 	this.players.get(player_num).player.kick(10, 0);

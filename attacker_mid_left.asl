@@ -12,7 +12,7 @@ joining_the_game.
 /* Plans */
 
 +joining_the_game <- !join.
-+!join : joining_the_game<- -joining_the_game; +before_kick_off; join_team(0,left); !set_up.
++!join : joining_the_game <- -joining_the_game; +before_kick_off; join_team(0,left); !set_up.
 +!join <- !set_up.
 
 

@@ -28,7 +28,7 @@ class VisualInfo
     // Split objects into specific lists
     private Vector<?> m_ball_list;
     private Vector<?> m_player_list;
-    private Vector<?> m_flag_list;
+    private Vector<FlagInfo> m_flag_list;
     private Vector<?> m_goal_list;
     private Vector<LineInfo> m_line_list;
     
@@ -41,7 +41,7 @@ class VisualInfo
     m_ball_list = new Vector<Object>(1);
     m_goal_list = new Vector<Object>(10);
     m_line_list = new Vector<LineInfo>(20);
-    m_flag_list = new Vector<Object>(60);
+    m_flag_list = new Vector<FlagInfo>(60);
     m_objects = new Vector<ObjectInfo>(113);
     }
     
@@ -65,7 +65,7 @@ class VisualInfo
     return m_line_list;
     }
     
-    public Vector<?> getFlagList()
+    public Vector<FlagInfo> getFlagList()
     {
     return m_flag_list;
     }
@@ -247,6 +247,7 @@ class VisualInfo
             // Implementing flags like this, allows one to specifically find a
             // particular flag (i.e. "flag c", or "flag p l t")
         objInfo = new FlagInfo(flagType, type, pos1, pos2, num, out);
+        m_flag_list.add((FlagInfo) objInfo);
         }
     }
     return objInfo;

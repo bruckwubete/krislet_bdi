@@ -56,6 +56,25 @@ class Memory
         return null;
     }
 
+    // This function looks for specified line
+    public FlagInfo getLine(String kind)
+    {
+        if( m_info == null )
+            waitForNewInfo();
+
+        Vector<FlagInfo> m_flag_list = m_info.getFlagList();
+
+        for(int c = 0 ; c < m_flag_list.size() ; c ++)
+        {
+            FlagInfo e = m_flag_list.elementAt(c);
+            String eKind = "" + e.m_type + e.m_pos1 + e.m_pos2;
+            if(eKind.equals(kind))
+                return m_flag_list.elementAt(c);
+        }
+
+        return null;
+    }
+
 
     //---------------------------------------------------------------------------
     // This function waits for new visual information

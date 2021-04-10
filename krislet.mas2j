@@ -13,9 +13,5 @@ MAS krislet_player {
 		//right_wing_left;
 		//left_wing_right;
 		//attacker_mid_right;
-
-
-	aslSourcePath:
-		"src/asl";
 }
 
