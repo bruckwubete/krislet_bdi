@@ -99,6 +99,8 @@ class Brain extends Thread implements SensorInput {
             world.clearPercepts(m_name);
             world.clearPercepts();
 
+            world.addPercept(m_name, ASSyntax.createLiteral("team", ASSyntax.createLiteral(m_team)));
+
             // add play mode if we care about it
             m_playMode = m_playMode.replaceAll("_([0-9]+)", "");
             Literal playModeL = playModeToPercept.get(m_playMode);

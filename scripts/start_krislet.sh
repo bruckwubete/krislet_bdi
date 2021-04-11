@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-rcssmonitor --show-view-area=on &
+#rcssmonitor --show-view-area=on &
 rcssserver
