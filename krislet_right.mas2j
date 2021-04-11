@@ -1,0 +1,17 @@
+MAS krislet_right {
+
+    environment: VCWorld
+    agents:
+		
+		
+        //Working 
+		goalie_r;
+		left_defence_r;
+		right_defence_r;
+		stricker_1_r;
+		stricker_2_r;
+		
+		
+	aslSourcePath:
+		"src/asl";
+}

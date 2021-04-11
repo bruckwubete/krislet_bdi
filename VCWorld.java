@@ -4,6 +4,9 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -20,22 +23,26 @@ public class VCWorld extends Environment {
 
 
     /** constant terms used for perception */
+    public static final Literal before_kick_off = ASSyntax.createLiteral("before_kick_off");
+    public static final Literal goal_l = ASSyntax.createLiteral("goal_l");
+    public static final Literal goal_r = ASSyntax.createLiteral("goal_r");
     public static final Literal play_on = ASSyntax.createLiteral("play_on");
     public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
     public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
-    public static final Literal ball_not_in_view = ASSyntax.createLiteral("ball_not_in_view");
-    public static final Literal ball_in_view_far = ASSyntax.createLiteral("ball_in_view_far");
-    public static final Literal ball_in_view_close = ASSyntax.createLiteral("ball_in_view_close");
 
-    private KrisletContext playerContext;
+    private HashMap<String, KrisletContext> players = new HashMap<String, KrisletContext>();
 
-    public VCWorld() {
-        clearPercepts();
-        playerContext = new KrisletContext(this);
-        new Thread(playerContext).start();
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {}
+    
+    
+    public VCWorld() {}
+    
+    private void joinTeam(String ag, String team, int player_num) {
+    	clearPercepts();
+        players.put(ag, new KrisletContext(ag,this,team));
+        new Thread(players.get(ag)).start();
+//        try {
+//            Thread.sleep(200);
+//        } catch (Exception e) {}
     }
 
     @Override
@@ -44,23 +51,60 @@ public class VCWorld extends Environment {
 
         synchronized (modelLock) {
             // Change the world model based on action
+        	//int player_num = Integer.parseInt(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
+        	ObjectInfo goal;
+        	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
-                    this.playerContext.player.turn(10);
+                	ObjectInfo ball = this.players.get(ag).player.getBall(); //TODO: try to do this in BDI
+                	if(ball != null) 
+                		this.players.get(ag).player.turn(ball.getDirection());
+                	else
+                		this.players.get(ag).player.turn(40); //was 40
                     break;
-                case "dash_to_ball":
-                    this.playerContext.player.dash(100);
+                case "dash":
+                	this.players.get(ag).player.dash(100); //was 100
                     break;
                 case "turn_to_goal":
-                    this.playerContext.player.turn(30);
+                	String g = action.getTerm(0).toString();
+                	goal = this.players.get(ag).player.getGoal(g);
+                	if(goal != null) 
+                		this.players.get(ag).player.turn(goal.getDirection());
+                	else
+                		this.players.get(ag).player.turn(30); //was 30
                     break;
+                case "kick_start":
+                	this.players.get(ag).player.kick(40, 40);
+                    break;
+                case "dribble":
+                	this.players.get(ag).player.kick(10, 0);
+                	break;
                 case "kick_to_goal":
-                    this.playerContext.player.kick(100, 0);
+                	String g1 = action.getTerm(0).toString();
+                	goal = this.players.get(ag).player.getGoal(g1);
+                	if(goal != null) 
+                		this.players.get(ag).player.kick(100,goal.getDirection());
+                	else
+                		this.players.get(ag).player.kick(100, 0);
                     break;
                 case "move":
+                    waitForPlay(ag);
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
-                    this.playerContext.player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
+                	this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
+                case "move_too":
+                	break;
+                case "join_team":
+                	this.joinTeam(ag, action.getTerms().get(1).toString(),Integer.parseInt(action.getTerms().get(0).toString()));///////////////////////////////////////////////////////////////////////////////
+                	break;
+                case "turn_to_flag":
+                	String flag = action.getTerm(0).toString();
+                	ObjectInfo f = this.players.get(ag).player.getFlag(flag);
+                	if(f != null) 
+                		this.players.get(ag).player.turn(f.getDirection());
+                	else
+                		this.players.get(ag).player.turn(30); //was 30
+                	break;
                 default:
                     logger.info("The action " + action + " is not implemented!");
                     return false;
@@ -74,6 +118,16 @@ public class VCWorld extends Environment {
 
         clearPercepts(); // resets perceptions. Percepts are set by brain
         return true;
+    }
+
+    private void waitForPlay(String ag) {
+        while (this.players.get(ag).player == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
