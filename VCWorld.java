@@ -21,20 +21,9 @@ public class VCWorld extends Environment {
     /** general delegations */
     private Logger   logger = Logger.getLogger("env."+VCWorld.class.getName());
 
-
-    /** constant terms used for perception */
-    public static final Literal before_kick_off = ASSyntax.createLiteral("before_kick_off");
-    public static final Literal goal_l = ASSyntax.createLiteral("goal_l");
-    public static final Literal goal_r = ASSyntax.createLiteral("goal_r");
-    public static final Literal goal_kick_r = ASSyntax.createLiteral("goal_kick_r");
-    public static final Literal goal_kick_l = ASSyntax.createLiteral("goal_kick_l");
-    public static final Literal play_on = ASSyntax.createLiteral("play_on");
-    public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
-    public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
-
     private HashMap<String, KrisletContext> players = new HashMap<String, KrisletContext>();
 
-    
+
     
     public VCWorld() {}
     
@@ -47,7 +36,6 @@ public class VCWorld extends Environment {
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag + " EXECUTING:  "+action);
-
         synchronized (modelLock) {
         	ObjectInfo goal;
             switch (action.getFunctor()) {

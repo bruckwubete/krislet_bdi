@@ -101,11 +101,6 @@ class Brain extends Thread implements SensorInput {
     // ************************************************
 
     public void run() {
-        ObjectInfo object;
-
-        float turnAngle = 10;
-        float objectDistance = 10;
-
         while (!m_timeOver) {
             //clear percepts
             world.clearPercepts(m_name);
@@ -113,7 +108,6 @@ class Brain extends Thread implements SensorInput {
 
             // add play mode if we care about it
             m_playMode = m_playMode.replaceAll("_([0-9]+)", "");
-            System.out.println(m_playMode);
             Literal playModeL = playModeToPercept.get(m_playMode);
             if(playModeL != null){
                 world.addPercept(playModeL);
@@ -125,10 +119,6 @@ class Brain extends Thread implements SensorInput {
                     if(obj != null) {
                         world.addPercept(m_name, ASSyntax.createLiteral("distance", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_distance)));
                         world.addPercept(m_name, ASSyntax.createLiteral("direction", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_direction)));
-                        world.addPercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
-
-                    } else {
-                        world.removePercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
                     }
                 });
             });
