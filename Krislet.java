@@ -124,7 +124,7 @@ class Krislet implements SendCommand
 
     //---------------------------------------------------------------------------
     // This is main loop for player
-    protected void mainLoop(VCWorld world,String ag) throws IOException
+    protected void mainLoop(KrisletWorld world, String ag) throws IOException
     {
     byte[] buffer = new byte[MSG_SIZE];
     DatagramPacket packet = new DatagramPacket(buffer, MSG_SIZE);
@@ -204,7 +204,7 @@ class Krislet implements SendCommand
 
     //---------------------------------------------------------------------------
     // This function parses initial message from the server
-    protected void parseInitCommand(VCWorld world, String message,String ag)
+    protected void parseInitCommand(KrisletWorld world, String message, String ag)
     throws IOException
     {
     Matcher m = Pattern.compile("^\\(init\\s(\\w)\\s(\\d{1,2})\\s(\\w+?)\\).*$").matcher(message);

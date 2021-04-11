@@ -1,8 +1,9 @@
 MAS krislet_player {
 
-    environment: VCWorld
+    environment: KrisletWorld
     agents:
-        striker;
+        striker [team="left"] agentArchClass KrisletAgentArch #1;
+        striker [team="right"] agentArchClass KrisletAgentArch #1;
 		//left_wing_left;
 		//right_defence_right;
 		//right_defence_left;

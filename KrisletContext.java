@@ -1,17 +1,15 @@
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 public class KrisletContext implements Runnable {
     public  Krislet player;
-    private VCWorld world;
+    private KrisletWorld world;
     private String name;
     public String team;
     
     
 
     
-    public KrisletContext(String ag, VCWorld world, String team) {
+    public KrisletContext(String ag, KrisletWorld world, String team) {
         super();
         this.world = world;
         this.team = team;

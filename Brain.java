@@ -11,13 +11,7 @@
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.Math;
 import java.util.*;
-import java.util.regex.*;
 import java.lang.*;
 
 
@@ -54,7 +48,7 @@ class Brain extends Thread implements SensorInput {
     HashMap<String, Literal> playModeToPercept = new HashMap<String, Literal>();
 
 
-    public Brain(VCWorld world, SendCommand krislet,
+    public Brain(KrisletWorld world, SendCommand krislet,
                  String team,
                  char side,
                  int number,
@@ -69,7 +63,6 @@ class Brain extends Thread implements SensorInput {
         m_playMode = playMode;
         m_name = ag;
 
-        System.out.println("Name: " + m_name);
         playModes.forEach(m -> {
             playModeToPercept.put(m, ASSyntax.createLiteral(m));
         });
@@ -173,7 +166,7 @@ class Brain extends Thread implements SensorInput {
     private char m_side;
     volatile private boolean m_timeOver;
     private String m_playMode;
-    private VCWorld world;
+    private KrisletWorld world;
     private String m_name;
     private String m_team;
     private int m_number;

@@ -3,8 +3,7 @@
 /* Initial beliefs and rules */
 !join_the_game.
 
-+!join_the_game <- join_team(0, left); !spwan.
-
++!join_the_game <- join_team(X); !spwan.
 +goal_l <- !spwan.
 +goal_r <- !spwan.
 +goal_kick_r <- !spwan.

@@ -1,6 +1,6 @@
 MAS krislet_player {
 
-    environment: VCWorld
+    environment: KrisletWorld
     agents:
 		
 		attacker_mid_left;
