@@ -200,6 +200,9 @@ class Krislet implements SendCommand
     public ObjectInfo getGoal() {
     	return m_brain.getGoal();
     }
+    public ObjectInfo getFlag(String flag) {
+    	return m_brain.getFlag(flag);
+    }
     //---------------------------------------------------------------------------
     // This function sends bye command to the server
     public void bye()

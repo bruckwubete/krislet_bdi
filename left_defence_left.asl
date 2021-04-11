@@ -9,42 +9,49 @@ joining_the_game.
 /* Plans */
 
 +joining_the_game <- !join.
-+!join : joining_the_game <- -joining_the_game; +before_kick_off; join_team(2,left); !set_up.
++!join : joining_the_game <- -joining_the_game; +before_kick_off; join_team(4,left); !set_up.
 +!join <- !set_up.
 
 
 +goal_l <- !set_up.
 +goal_r <- !set_up.
 
-+!set_up <- move(2,-36,-20); -before_kick_off.
++!set_up <- move(-36,-20); -before_kick_off.
 
-+kick_off_l <- +attacking; !defence.
-+kick_off_r <- +defence; !defence.
++kick_off_l <- !defence.
++kick_off_r <- !defence.
 
 +play_on <- !defence.
 
-+!defence : ball_not_in_range <- find_center(2); !defence.
-+!defence : ball_in_range <- !attack.
-+!defence <- !defence.
++!defence : not(viz("ball", "")) <- turn_to_ball. //!attack.
++!defence : viz("ball", "") & distance("ball", "", X) & X > 25.0 <- turn_to_ball. //!attack.
++!defence : viz("ball", "") & distance("ball", "", X) & X <= 25.0 <- !chase_ball. //!attack.
+//default for attack
++!defence <- turn_to_ball; !defence.
 
-+!attack : ball_not_in_view <- turn_to_ball(2). //!attack.
-+!attack : ball_in_view_far <- dash(2). //!attack.
-+!attack : ball_in_view_close <- !turn_to_g. //!attack.
-+!attack <- !attack.
++!chase_ball : not(viz("ball", "")) <- turn_to_ball.
++!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 25.0 & direction("ball", "", Y) & Y > 2.0 <- !return_to_flag. // !chase_ball.
++!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 1.0 & direction("ball", "", Y) & Y > 2.0 <- turn_to_ball; !chase_ball.
++!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 1.0 & direction("ball", "", Y) & Y <= 2.0 <- dash; !chase_ball.
++!chase_ball : viz("ball", "") & distance("ball", "", X) & X <= 1.0 <- !pass_kick_dribble.
++!chase_ball <- turn_to_ball(2); !chase_ball.
 
-+!turn_to_g : cant_see_net <- turn_to_goal(2); !turn_to_g.
-+!turn_to_g : net_close <- !kick_away.
-+!turn_to_g : net_far <- !kick_away.
-+!turn_to_g <- !turn_to_g.
+//agent decides if a player should pass, kick or dribble
++!pass_kick_dribble : viz("goal", "r") <- kick_to_goal; !return_to_flag.
++!pass_kick_dribble : not(viz("goal", "r")) <- !turn_to_g.
+//default for +!pass_kick_dribble
++!pass_kick_dribble <- turn_to_ball; !defence.
 
-+!kick_away : cant_see_net <- !turn_to_g.
-+!kick_away : net_far <- kick_to_goal(2); +cant_see_flag; !return_to_position.
-+!kick_away <- !kick_away.
++!turn_to_g : not(viz("goal", "r")) <- turn_to_goal; !turn_to_g.
++!turn_to_g : viz("goal", "r") <- !pass_kick_dribble.
++!turn_to_g <- turn_to_ball; !turn_to_g.
 
-+!return_to_position : cant_see_flag <- find_flag(2); !return_to_position.
-+!return_to_position : can_see_flag <- +station_flag_far; !move_to_flag.
-+!return_to_position <- !return_to_position.
++!return_to_flag : not(viz("flag", "plt")) & goal_l <- !set_up.
++!return_to_flag : not(viz("flag", "plt")) & goal_r <- !set_up.
++!return_to_flag : not(viz("flag", "plt")) <- turn_to_flag(plt); !return_to_flag.
++!return_to_flag : viz("flag", "plt") & distance("flag", "plt", X) & X > 1.0 & direction("flag", "plt", Y) & Y > 5.0 <- turn_to_flag(plt); !return_to_flag.
++!return_to_flag : viz("flag", "plt") & distance("flag", "plt", X) & X > 1.0 & direction("flag", "plt", Y) & Y <= 5.0 <- dash; !return_to_flag.
++!return_to_flag : viz("flag", "plt") & distance("flag", "plt", X) & X <= 1.0 <- !defence.
++!return_to_flag <- !return_to_flag.
 
-+!move_to_flag : station_flag_far <- dash(2); !move_to_flag.
-+!move_to_flag : at_station_flag <- -station_flag_far; !defence.
-+!move_to_flag <- !move_to_flag.
+//+!attack <- !defence. //temp 

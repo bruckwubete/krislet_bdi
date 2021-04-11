@@ -51,7 +51,8 @@ public class VCWorld extends Environment {
 
         synchronized (modelLock) {
             // Change the world model based on action
-        	int player_num = Integer.parseInt(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
+        	//int player_num = Integer.parseInt(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
+        	ObjectInfo goal;
         	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
@@ -59,13 +60,17 @@ public class VCWorld extends Environment {
                 	if(ball != null) 
                 		this.players.get(ag).player.turn(ball.getDirection());
                 	else
-                		this.players.get(ag).player.turn(40);
+                		this.players.get(ag).player.turn(40); //was 40
                     break;
                 case "dash":
-                	this.players.get(ag).player.dash(300);;
+                	this.players.get(ag).player.dash(100); //was 100
                     break;
                 case "turn_to_goal":
-                	this.players.get(ag).player.turn(30);
+                	goal = this.players.get(ag).player.getGoal();
+                	if(goal != null) 
+                		this.players.get(ag).player.turn(goal.getDirection());
+                	else
+                		this.players.get(ag).player.turn(30); //was 30
                     break;
                 case "kick_start":
                 	this.players.get(ag).player.kick(40, 40);
@@ -73,7 +78,7 @@ public class VCWorld extends Environment {
                 case "dribble":
                 	this.players.get(ag).player.kick(10, 0);
                 case "kick_to_goal":
-                	ObjectInfo goal = this.players.get(ag).player.getGoal();
+                	goal = this.players.get(ag).player.getGoal();
                 	if(goal != null) 
                 		this.players.get(ag).player.kick(100,goal.getDirection());
                 	else
@@ -82,25 +87,20 @@ public class VCWorld extends Environment {
                 case "move":
                     waitForPlay(ag);
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
-                	this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(1))).solve(), ((NumberTermImpl) (action.getTerms().get(2))).solve());
+                	this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
                 case "move_too":
-                	//calculate player pos
-
-                	//turn to point
-
-                	//dash
-
-                	//calc player new pos
-
-                	//if there world.addpercept(there)
-
                 	break;
                 case "join_team":
-                	this.joinTeam(ag, action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
+                	this.joinTeam(ag, action.getTerms().get(1).toString(),Integer.parseInt(action.getTerms().get(0).toString()));///////////////////////////////////////////////////////////////////////////////
                 	break;
-                case "print":
-                	System.out.println("AAAAAAAAAAAAAAA" +action.getTerms());
+                case "turn_to_flag":
+                	String flag = action.getTerm(0).toString();
+                	ObjectInfo f = this.players.get(ag).player.getFlag(flag);
+                	if(f != null) 
+                		this.players.get(ag).player.turn(f.getDirection());
+                	else
+                		this.players.get(ag).player.turn(30); //was 30
                 	break;
                 default:
                     logger.info("The action " + action + " is not implemented!");

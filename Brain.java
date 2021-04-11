@@ -101,38 +101,48 @@ class Brain extends Thread implements SensorInput {
 
             world.clearPercepts(m_name);
 
-
+            ball = m_memory.getObject("ball");
+            if(m_team.equals("left"))
+            	goal = m_memory.getObject("goal","r");
+            else
+            	goal = m_memory.getObject("goal","l");
 
             //System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
             if (Pattern.matches("^before_kick_off.*", m_playMode)) {
-                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.before_kick_off);
+            }else {
+            	world.removePercept(VCWorld.before_kick_off);
             }
 
             if (Pattern.matches("^goal_l.*", m_playMode)) {
-                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.goal_l);
+            }else {
+            	world.removePercept(VCWorld.goal_l);
             }
 
             if (Pattern.matches("^goal_r.*", m_playMode)) {
-                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.goal_r);
+            }else {
+            	world.removePercept(VCWorld.goal_r);
             }
 
             if (Pattern.matches("^play_on.*", m_playMode)) {
-                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.play_on);
+            }else{
+            	world.removePercept(VCWorld.play_on);
             }
 
             if (Pattern.matches("^kick_off_l.*", m_playMode)) {
-                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.kick_off_l);
+            }else {
+            	world.removePercept(VCWorld.kick_off_l);
             }
 
             if (Pattern.matches("^kick_off_r.*", m_playMode)) {
-                world.clearPercepts(m_name);
                 world.addPercept(VCWorld.kick_off_r);
+            }else {
+            	world.removePercept(VCWorld.kick_off_r);
             }
 
             relevantObjects.forEach((objName, objValues) -> {
@@ -153,7 +163,7 @@ class Brain extends Thread implements SensorInput {
             });
 
             try {
-                Thread.sleep(2 * SoccerParams.simulator_step);
+                Thread.sleep(2*SoccerParams.simulator_step);
             } catch (Exception e) {
             }
 
@@ -184,6 +194,9 @@ class Brain extends Thread implements SensorInput {
     }
     public ObjectInfo getGoal() {
         return goal;
+    }
+    public ObjectInfo getFlag(String flag) {
+        return m_memory.getObject("flag", flag);
     }
     //---------------------------------------------------------------------------
     // This function receives hear information from player
