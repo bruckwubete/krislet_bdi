@@ -9,6 +9,7 @@
 //    Date:             March 4, 2008
 
 import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Literal;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -26,29 +27,7 @@ class Brain extends Thread implements SensorInput {
     // This constructor:
     // - stores connection to krislet
     // - starts thread for this object
-    public Brain(VCWorld world, SendCommand krislet,
-                 String team,
-                 char side,
-                 int number,
-                 String playMode, String ag) {
-        this.world = world;
-        m_timeOver = false;
-        m_krislet = krislet;
-        m_memory = new Memory();
-        m_team = team;
-        m_side = side;
-        m_number = number;
-        m_playMode = playMode;
-        m_name = ag;
 
-        System.out.println("Name: "+m_name);
-        start();
-    }
-
-    ObjectInfo ball;
-    ObjectInfo goal;
-
-    FlagInfo rtFlag, rbFlag, ltFlag, lbFlag;
     HashMap<String, List<String>> relevantObjects = new HashMap<String, List<String>>(){{
         put("ball", new ArrayList<String>(){{
             add("");
@@ -65,8 +44,38 @@ class Brain extends Thread implements SensorInput {
             add("t"); add("b");; add("l");; add("r");
         }});
     }};
+    List<String> playModes = new LinkedList<String>(){{
+        add("before_kick_off"); add("play_on");
+        add("goal_l"); add("goal_r");
+        add("goal_kick_l"); add("goal_kick_r");
+        add("kick_in_l"); add("kick_in_r");
+        add("kick_off_l"); add("kick_off_r");
+    }};
+    HashMap<String, Literal> playModeToPercept = new HashMap<String, Literal>();
 
-    double x, y;
+
+    public Brain(VCWorld world, SendCommand krislet,
+                 String team,
+                 char side,
+                 int number,
+                 String playMode, String ag) {
+        this.world = world;
+        m_timeOver = false;
+        m_krislet = krislet;
+        m_memory = new Memory();
+        m_team = team;
+        m_side = side;
+        m_number = number;
+        m_playMode = playMode;
+        m_name = ag;
+
+        System.out.println("Name: " + m_name);
+        playModes.forEach(m -> {
+            playModeToPercept.put(m, ASSyntax.createLiteral(m));
+        });
+        start();
+    }
+
     //---------------------------------------------------------------------------
     // This is main brain function used to make decision
     // In each cycle we decide which command to issue based on
@@ -98,60 +107,22 @@ class Brain extends Thread implements SensorInput {
         float objectDistance = 10;
 
         while (!m_timeOver) {
-
+            //clear percepts
             world.clearPercepts(m_name);
+            world.clearPercepts();
 
-            ball = m_memory.getObject("ball");
-            if(m_team.equals("left"))
-            	goal = m_memory.getObject("goal","r");
-            else
-            	goal = m_memory.getObject("goal","l");
-
-            //System.out.println(world.);
-            //System.out.println("PLAY MODE IS IN: " + m_playMode);
-            if (Pattern.matches("^before_kick_off.*", m_playMode)) {
-                world.addPercept(VCWorld.before_kick_off);
-            }else {
-            	world.removePercept(VCWorld.before_kick_off);
-            }
-
-            if (Pattern.matches("^goal_l.*", m_playMode)) {
-                world.addPercept(VCWorld.goal_l);
-            }else {
-            	world.removePercept(VCWorld.goal_l);
-            }
-
-            if (Pattern.matches("^goal_r.*", m_playMode)) {
-                world.addPercept(VCWorld.goal_r);
-            }else {
-            	world.removePercept(VCWorld.goal_r);
-            }
-
-            if (Pattern.matches("^play_on.*", m_playMode)) {
-                world.addPercept(VCWorld.play_on);
-            }else{
-            	world.removePercept(VCWorld.play_on);
-            }
-
-            if (Pattern.matches("^kick_off_l.*", m_playMode)) {
-                world.addPercept(VCWorld.kick_off_l);
-            }else {
-            	world.removePercept(VCWorld.kick_off_l);
-            }
-
-            if (Pattern.matches("^kick_off_r.*", m_playMode)) {
-                world.addPercept(VCWorld.kick_off_r);
-            }else {
-            	world.removePercept(VCWorld.kick_off_r);
+            // add play mode if we care about it
+            m_playMode = m_playMode.replaceAll("_([0-9]+)", "");
+            System.out.println(m_playMode);
+            Literal playModeL = playModeToPercept.get(m_playMode);
+            if(playModeL != null){
+                world.addPercept(playModeL);
             }
 
             relevantObjects.forEach((objName, objValues) -> {
                 objValues.forEach(v -> {
                     ObjectInfo obj = m_memory.getObject(objName, v);
                     if(obj != null) {
-                        if (objName == "ball") {
-                            ball = obj;
-                        }
                         world.addPercept(m_name, ASSyntax.createLiteral("distance", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_distance)));
                         world.addPercept(m_name, ASSyntax.createLiteral("direction", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_direction)));
                         world.addPercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
@@ -189,15 +160,6 @@ class Brain extends Thread implements SensorInput {
         m_memory.storeSpeedDirection(d);
     }
 
-    public ObjectInfo getBall() {
-        return ball;
-    }
-    public ObjectInfo getGoal(String g) {
-        return m_memory.getObject("goal",g);
-    }
-    public ObjectInfo getFlag(String flag) {
-        return m_memory.getObject("flag", flag);
-    }
     //---------------------------------------------------------------------------
     // This function receives hear information from player
     public void hear(int time, int direction, String message) {

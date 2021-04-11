@@ -26,6 +26,8 @@ public class VCWorld extends Environment {
     public static final Literal before_kick_off = ASSyntax.createLiteral("before_kick_off");
     public static final Literal goal_l = ASSyntax.createLiteral("goal_l");
     public static final Literal goal_r = ASSyntax.createLiteral("goal_r");
+    public static final Literal goal_kick_r = ASSyntax.createLiteral("goal_kick_r");
+    public static final Literal goal_kick_l = ASSyntax.createLiteral("goal_kick_l");
     public static final Literal play_on = ASSyntax.createLiteral("play_on");
     public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
     public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
@@ -40,9 +42,6 @@ public class VCWorld extends Environment {
     	clearPercepts();
         players.put(ag, new KrisletContext(ag,this,team));
         new Thread(players.get(ag)).start();
-//        try {
-//            Thread.sleep(200);
-//        } catch (Exception e) {}
     }
 
     @Override
@@ -50,60 +49,31 @@ public class VCWorld extends Environment {
         logger.info(ag + " EXECUTING:  "+action);
 
         synchronized (modelLock) {
-            // Change the world model based on action
-        	//int player_num = Integer.parseInt(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
         	ObjectInfo goal;
-        	//System.out.println(player_num);
             switch (action.getFunctor()) {
-                case "turn_to_ball":
-                	ObjectInfo ball = this.players.get(ag).player.getBall(); //TODO: try to do this in BDI
-                	if(ball != null) 
-                		this.players.get(ag).player.turn(ball.getDirection());
-                	else
-                		this.players.get(ag).player.turn(40); //was 40
+                case "turn":
+                    Double a = Double.parseDouble(action.getTerm(0).toString());
+                    this.players.get(ag).player.turn(0.1 *  a);
                     break;
                 case "dash":
-                	this.players.get(ag).player.dash(100); //was 100
+                    Double d = Double.parseDouble(action.getTerm(0).toString());
+                	this.players.get(ag).player.dash(8 * Math.pow(d, 2));
                     break;
-                case "turn_to_goal":
-                	String g = action.getTerm(0).toString();
-                	goal = this.players.get(ag).player.getGoal(g);
-                	if(goal != null) 
-                		this.players.get(ag).player.turn(goal.getDirection());
-                	else
-                		this.players.get(ag).player.turn(30); //was 30
-                    break;
-                case "kick_start":
-                	this.players.get(ag).player.kick(40, 40);
-                    break;
-                case "dribble":
-                	this.players.get(ag).player.kick(10, 0);
-                	break;
-                case "kick_to_goal":
-                	String g1 = action.getTerm(0).toString();
-                	goal = this.players.get(ag).player.getGoal(g1);
-                	if(goal != null) 
-                		this.players.get(ag).player.kick(100,goal.getDirection());
-                	else
-                		this.players.get(ag).player.kick(100, 0);
+                case "kick":
+                    Double p = Double.parseDouble(action.getTerm(0).toString());
+                    Double ka = 0.0;
+                    if(action.getTerm(1) !=null) {
+                        ka = Double.parseDouble(action.getTerm(1).toString());
+                    }
+                    this.players.get(ag).player.kick(p * 100, ka);
                     break;
                 case "move":
                     waitForPlay(ag);
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
                 	this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
-                case "move_too":
-                	break;
                 case "join_team":
                 	this.joinTeam(ag, action.getTerms().get(1).toString(),Integer.parseInt(action.getTerms().get(0).toString()));///////////////////////////////////////////////////////////////////////////////
-                	break;
-                case "turn_to_flag":
-                	String flag = action.getTerm(0).toString();
-                	ObjectInfo f = this.players.get(ag).player.getFlag(flag);
-                	if(f != null) 
-                		this.players.get(ag).player.turn(f.getDirection());
-                	else
-                		this.players.get(ag).player.turn(30); //was 30
                 	break;
                 default:
                     logger.info("The action " + action + " is not implemented!");
@@ -112,7 +82,7 @@ public class VCWorld extends Environment {
         }
 
         try {
-            Thread.sleep(2 * SoccerParams.simulator_step);
+            Thread.sleep(1 * SoccerParams.simulator_step);
         } catch (Exception e) {
         }
 

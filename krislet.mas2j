@@ -2,8 +2,7 @@ MAS krislet_player {
 
     environment: VCWorld
     agents:
-
-		attacker_mid_left;
+        striker;
 		//left_wing_left;
 		//right_defence_right;
 		//right_defence_left;

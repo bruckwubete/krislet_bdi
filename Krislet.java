@@ -133,7 +133,7 @@ class Krislet implements SendCommand
     init();
 
     m_socket.receive(packet);
-    parseInitCommand(world, new String(buffer),ag);
+    parseInitCommand(world, new String(buffer), ag);
     m_port = packet.getPort();
 
     // Now we should be connected to the server
@@ -193,16 +193,7 @@ class Krislet implements SendCommand
     {
     send("(change_view " + angle + " " + quality + ")");
     }
-    
-    public ObjectInfo getBall() {
-    	return m_brain.getBall();
-    }
-    public ObjectInfo getGoal(String g) {
-    	return m_brain.getGoal(g);
-    }
-    public ObjectInfo getFlag(String flag) {
-    	return m_brain.getFlag(flag);
-    }
+
     //---------------------------------------------------------------------------
     // This function sends bye command to the server
     public void bye()
