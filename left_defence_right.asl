@@ -37,12 +37,12 @@ joining_the_game.
 +!chase_ball <- turn_to_ball(2); !chase_ball.
 
 //agent decides if a player should pass, kick or dribble
-+!pass_kick_dribble : viz("goal", "r") <- kick_to_goal; !return_to_flag.
++!pass_kick_dribble : viz("goal", "r") <- kick_to_goal(r); !return_to_flag.
 +!pass_kick_dribble : not(viz("goal", "r")) <- !turn_to_g.
 //default for +!pass_kick_dribble
 +!pass_kick_dribble <- turn_to_ball; !defence.
 
-+!turn_to_g : not(viz("goal", "r")) <- turn_to_goal; !turn_to_g.
++!turn_to_g : not(viz("goal", "r")) <- turn_to_goal(r); !turn_to_g.
 +!turn_to_g : viz("goal", "r") <- !pass_kick_dribble.
 +!turn_to_g <- turn_to_ball; !turn_to_g.
 

@@ -66,7 +66,8 @@ public class VCWorld extends Environment {
                 	this.players.get(ag).player.dash(100); //was 100
                     break;
                 case "turn_to_goal":
-                	goal = this.players.get(ag).player.getGoal();
+                	String g = action.getTerm(0).toString();
+                	goal = this.players.get(ag).player.getGoal(g);
                 	if(goal != null) 
                 		this.players.get(ag).player.turn(goal.getDirection());
                 	else
@@ -77,8 +78,10 @@ public class VCWorld extends Environment {
                     break;
                 case "dribble":
                 	this.players.get(ag).player.kick(10, 0);
+                	break;
                 case "kick_to_goal":
-                	goal = this.players.get(ag).player.getGoal();
+                	String g1 = action.getTerm(0).toString();
+                	goal = this.players.get(ag).player.getGoal(g1);
                 	if(goal != null) 
                 		this.players.get(ag).player.kick(100,goal.getDirection());
                 	else

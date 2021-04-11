@@ -30,14 +30,14 @@ joining_the_game.
 
 //agent decides if a player should pass, kick or dribble
 //agent decides if a player should pass, kick or dribble
-+!pass_kick_dribble : kick_off_r <- -kick_off_r; kick_start. // !chase_ball.
-+!pass_kick_dribble : viz("goal", "r") & distance("goal", "r", X) & X < 25.0  <- kick_to_goal. // !chase_ball.
++!pass_kick_dribble : kick_off_l <- kick_start. // !chase_ball.
++!pass_kick_dribble : viz("goal", "r") & distance("goal", "r", X) & X < 25.0  <- kick_to_goal(r). // !chase_ball.
 +!pass_kick_dribble : viz("goal", "r") & distance("goal", "r", X) & X >= 25.0 <- dribble. // !chase_ball.
 +!pass_kick_dribble : not(viz("goal", "r")) <- !turn_to_g.
 //default for +!pass_kick_dribble
 +!pass_kick_dribble <- turn_to_ball; !chase_ball.
 
-+!turn_to_g : not(viz("goal", "r")) <- turn_to_goal; !turn_to_g.
++!turn_to_g : not(viz("goal", "r")) <- turn_to_goal(r); !turn_to_g.
 +!turn_to_g : viz("goal", "r") <- !pass_kick_dribble.
 +!turn_to_g <- turn_to_ball; !turn_to_g.
 

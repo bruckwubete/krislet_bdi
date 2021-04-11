@@ -30,7 +30,7 @@ public interface SensorInput
     public void hear(int time, String message);
     
     public ObjectInfo getBall();
-    public ObjectInfo getGoal();
+    public ObjectInfo getGoal(String g);
     public ObjectInfo getFlag(String flag);
     public void setSpeedDirection(Float d);
 }
