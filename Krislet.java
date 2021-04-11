@@ -200,6 +200,9 @@ class Krislet implements SendCommand
     public ObjectInfo getGoal() {
     	return m_brain.getGoal();
     }
+    public ObjectInfo getFlag(String flag) {
+    	return m_brain.getFlag(flag);
+    }
     //---------------------------------------------------------------------------
     // This function sends bye command to the server
     public void bye()
@@ -241,22 +244,29 @@ class Krislet implements SendCommand
     //---------------------------------------------------------------------------
     // This function parses sensor information
     private void parseSensorInformation(String message)
-    throws IOException
-    {
-    // First check kind of information      
-    Matcher m=message_pattern.matcher(message);
-    if(!m.matches())
-        {
-        throw new IOException(message);
+    throws IOException {
+        // First check kind of information
+        Matcher m = message_pattern.matcher(message);
+        // System.out.println(message);
+        if (!m.matches()) {
+            throw new IOException(message);
         }
-    if( m.group(1).compareTo("see") == 0 )
-        {
-        VisualInfo  info = new VisualInfo(message);
-        info.parse();
-        m_brain.see(info);
+        if (m.group(1).compareTo("see") == 0) {
+            // System.out.println("RECEIVED SEE INFO FROM SERVER" + message);
+            VisualInfo info = new VisualInfo(message);
+            info.parse();
+            m_brain.see(info);
+        } else if (m.group(1).compareTo("hear") == 0)
+            parseHear(message);
+        else if (m.group(1).compareTo("sense_body") == 0) {
+            //System.out.println("GOT SENSE BODY MESSAGE: " + message);
+            int indexOfSpeed = message.indexOf("speed");
+            String speeds = message.substring(indexOfSpeed+6, message.indexOf(")", indexOfSpeed+6));
+            //System.out.println("INDEX OF SPEED: " + indexOfSpeed + "SPEED IS " + speeds);
+            float direction = Float.parseFloat(speeds.split(" ")[1]);
+            //System.out.println("SPEED DIRECTION IS: " + direction);
+            m_brain.setSpeedDirection(new Float(direction));
         }
-    else if( m.group(1).compareTo("hear") == 0 )
-        parseHear(message);
     }
 
 

@@ -31,4 +31,6 @@ public interface SensorInput
     
     public ObjectInfo getBall();
     public ObjectInfo getGoal();
+    public ObjectInfo getFlag(String flag);
+    public void setSpeedDirection(Float d);
 }

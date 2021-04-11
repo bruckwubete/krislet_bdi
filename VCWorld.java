@@ -5,6 +5,7 @@ import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -28,97 +29,78 @@ public class VCWorld extends Environment {
     public static final Literal play_on = ASSyntax.createLiteral("play_on");
     public static final Literal kick_off_l = ASSyntax.createLiteral("kick_off_l");
     public static final Literal kick_off_r = ASSyntax.createLiteral("kick_off_r");
-    public static final Literal ball_not_in_view = ASSyntax.createLiteral("ball_not_in_view");
-    public static final Literal ball_in_view_far = ASSyntax.createLiteral("ball_in_view_far");
-    public static final Literal ball_in_view_close = ASSyntax.createLiteral("ball_in_view_close");
-    
-    //net literals
-    public static final Literal net_close = ASSyntax.createLiteral("net_close");
-    public static final Literal net_far = ASSyntax.createLiteral("net_far");
-    public static final Literal cant_see_net = ASSyntax.createLiteral("cant_see_net");
-    
-    public static final Literal ball_in_my_side = ASSyntax.createLiteral("ball_in_my_side");
 
-    //private KrisletContext playerContext;
-    private List<KrisletContext> players = new ArrayList<KrisletContext>();
+    private HashMap<String, KrisletContext> players = new HashMap<String, KrisletContext>();
+
     
     
-    public VCWorld() {
-        //clearPercepts();
-        //playerContext = new KrisletContext(this,"right");
-        //new Thread(playerContext).start();
-        //try {
-        //    Thread.sleep(200);
-        //} catch (Exception e) {}
-    	for(int i = 0; i<10; i++) {
-        	players.add(null);
-        }
-    }
+    public VCWorld() {}
     
     private void joinTeam(String ag, String team, int player_num) {
     	clearPercepts();
-        players.add(player_num,new KrisletContext(ag,this,team));
-        new Thread(players.get(player_num)).start();
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {}
+        players.put(ag, new KrisletContext(ag,this,team));
+        new Thread(players.get(ag)).start();
+//        try {
+//            Thread.sleep(200);
+//        } catch (Exception e) {}
     }
-    
+
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag + " EXECUTING:  "+action);
-        
+
         synchronized (modelLock) {
             // Change the world model based on action
-        	int player_num = Integer.valueOf(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
-        	System.out.println(player_num);
+        	//int player_num = Integer.parseInt(action.getTerms().get(0).toString());//((NumberTermImpl) (action.getTerms().get(1))).solve();
+        	ObjectInfo goal;
+        	//System.out.println(player_num);
             switch (action.getFunctor()) {
                 case "turn_to_ball":
-                	ObjectInfo ball = this.players.get(player_num).player.getBall();
+                	ObjectInfo ball = this.players.get(ag).player.getBall(); //TODO: try to do this in BDI
                 	if(ball != null) 
-                		this.players.get(player_num).player.turn(ball.getDirection());
+                		this.players.get(ag).player.turn(ball.getDirection());
                 	else
-                		this.players.get(player_num).player.turn(40);
+                		this.players.get(ag).player.turn(40); //was 40
                     break;
-                case "dash_to_ball":
-                	this.players.get(player_num).player.dash(100);;
+                case "dash":
+                	this.players.get(ag).player.dash(100); //was 100
                     break;
                 case "turn_to_goal":
-                	this.players.get(player_num).player.turn(30);
+                	goal = this.players.get(ag).player.getGoal();
+                	if(goal != null) 
+                		this.players.get(ag).player.turn(goal.getDirection());
+                	else
+                		this.players.get(ag).player.turn(30); //was 30
                     break;
                 case "kick_start":
-                	this.players.get(player_num).player.kick(40,40);
+                	this.players.get(ag).player.kick(40, 40);
                     break;
                 case "dribble":
-                	this.players.get(player_num).player.kick(10, 0);
+                	this.players.get(ag).player.kick(10, 0);
                 case "kick_to_goal":
-                	ObjectInfo goal = this.players.get(player_num).player.getGoal();
+                	goal = this.players.get(ag).player.getGoal();
                 	if(goal != null) 
-                		this.players.get(player_num).player.kick(100,goal.getDirection());
+                		this.players.get(ag).player.kick(100,goal.getDirection());
                 	else
-                		this.players.get(player_num).player.kick(100, 0);
+                		this.players.get(ag).player.kick(100, 0);
                     break;
                 case "move":
+                    waitForPlay(ag);
                     //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
-                	this.players.get(player_num).player.move(((NumberTermImpl) (action.getTerms().get(1))).solve(), ((NumberTermImpl) (action.getTerms().get(2))).solve());
+                	this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
                 case "move_too":
-                	//calculate player pos
-                	
-                	//turn to point 
-                	
-                	//dash
-                	
-                	//calc player new pos
-                	
-                	//if there world.addpercept(there)
-                	
                 	break;
                 case "join_team":
-                	this.joinTeam(ag,action.getTerms().get(1).toString(),player_num);///////////////////////////////////////////////////////////////////////////////
+                	this.joinTeam(ag, action.getTerms().get(1).toString(),Integer.parseInt(action.getTerms().get(0).toString()));///////////////////////////////////////////////////////////////////////////////
                 	break;
-                case "print":
-                	System.out.println("AAAAAAAAAAAAAAA" +action.getTerms());
+                case "turn_to_flag":
+                	String flag = action.getTerm(0).toString();
+                	ObjectInfo f = this.players.get(ag).player.getFlag(flag);
+                	if(f != null) 
+                		this.players.get(ag).player.turn(f.getDirection());
+                	else
+                		this.players.get(ag).player.turn(30); //was 30
                 	break;
                 default:
                     logger.info("The action " + action + " is not implemented!");
@@ -133,6 +115,16 @@ public class VCWorld extends Environment {
 
         clearPercepts(); // resets perceptions. Percepts are set by brain
         return true;
+    }
+
+    private void waitForPlay(String ag) {
+        while (this.players.get(ag).player == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

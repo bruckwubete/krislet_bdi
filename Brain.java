@@ -8,6 +8,8 @@
 //    Modified by:      Edgar Acosta
 //    Date:             March 4, 2008
 
+import jason.asSyntax.ASSyntax;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,7 +17,7 @@ import java.io.InputStreamReader;
 import java.lang.Math;
 import java.util.*;
 import java.util.regex.*;
-
+import java.lang.*;
 
 
 
@@ -38,13 +40,33 @@ class Brain extends Thread implements SensorInput {
         m_number = number;
         m_playMode = playMode;
         m_name = ag;
-        
+
         System.out.println("Name: "+m_name);
         start();
     }
 
     ObjectInfo ball;
     ObjectInfo goal;
+
+    FlagInfo rtFlag, rbFlag, ltFlag, lbFlag;
+    HashMap<String, List<String>> relevantObjects = new HashMap<String, List<String>>(){{
+        put("ball", new ArrayList<String>(){{
+            add("");
+        }});
+        put("flag", new ArrayList<String>(){{
+            add(" c "); add(" rt"); add(" rb"); add(" lt"); add(" lb"); add(" ct"); add(" cb");
+            add("glt"); add("glb"); add("grt"); add("grb");
+            add("plt"); add("plc"); add("plb"); add("prt"); add("prc"); add("prb");
+        }});
+        put("goal", new ArrayList<String>(){{
+            add("l"); add("r");
+        }});
+        put("line", new ArrayList<String>(){{
+            add("t"); add("b");; add("l");; add("r");
+        }});
+    }};
+
+    double x, y;
     //---------------------------------------------------------------------------
     // This is main brain function used to make decision
     // In each cycle we decide which command to issue based on
@@ -71,114 +93,81 @@ class Brain extends Thread implements SensorInput {
 
     public void run() {
         ObjectInfo object;
-        
+
         float turnAngle = 10;
         float objectDistance = 10;
 
         while (!m_timeOver) {
-        	
-        	
-        	
-        	//System.out.println(world.);
+
+            world.clearPercepts(m_name);
+
+            ball = m_memory.getObject("ball");
+            if(m_team.equals("left"))
+            	goal = m_memory.getObject("goal","r");
+            else
+            	goal = m_memory.getObject("goal","l");
+
+            //System.out.println(world.);
             //System.out.println("PLAY MODE IS IN: " + m_playMode);
             if (Pattern.matches("^before_kick_off.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.before_kick_off);
+                world.addPercept(VCWorld.before_kick_off);
+            }else {
+            	world.removePercept(VCWorld.before_kick_off);
             }
-            
+
             if (Pattern.matches("^goal_l.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.goal_l);
+                world.addPercept(VCWorld.goal_l);
+            }else {
+            	world.removePercept(VCWorld.goal_l);
             }
-            
+
             if (Pattern.matches("^goal_r.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.goal_r);
+                world.addPercept(VCWorld.goal_r);
+            }else {
+            	world.removePercept(VCWorld.goal_r);
             }
-            
+
             if (Pattern.matches("^play_on.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.play_on);
+                world.addPercept(VCWorld.play_on);
+            }else{
+            	world.removePercept(VCWorld.play_on);
             }
 
             if (Pattern.matches("^kick_off_l.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.kick_off_l);
+                world.addPercept(VCWorld.kick_off_l);
+            }else {
+            	world.removePercept(VCWorld.kick_off_l);
             }
 
             if (Pattern.matches("^kick_off_r.*", m_playMode)) {
-            	world.clearPercepts();
-            	world.addPercept(VCWorld.kick_off_r);
-            }
-
-            boolean ballVisible = false;
-            boolean ballInRange = false;
-            boolean goalVisible = false;
-            //System.out.println("BRAIN SENSING");
-            
-            //ball visible?
-            ball = m_memory.getObject("ball");
-            //goal visible?
-            if (m_side == 'l')
-                goal = m_memory.getObject("goal r");
-            else
-                goal = m_memory.getObject("goal l");
-            
-            if (ball != null && ball.m_direction < 2.0) {
-                if (ball.m_distance < 1.0) {
-                    //world.addPercept(VCWorld.ball_in_view_close);
-                    //world.removePercept(VCWorld.ball_in_view_far);
-                    //world.removePercept(VCWorld.ball_not_in_view);
-                    world.addPercept(m_name,VCWorld.ball_in_view_close);
-                    world.removePercept(m_name,VCWorld.ball_in_view_far);
-                    world.removePercept(m_name,VCWorld.ball_not_in_view);
-                } else {
-                    world.addPercept(m_name,VCWorld.ball_in_view_far);
-                    world.removePercept(m_name,VCWorld.ball_in_view_close);
-                    world.removePercept(m_name,VCWorld.ball_not_in_view);
-                    //world.addPercept(VCWorld.ball_in_view_far);
-                    //world.removePercept(VCWorld.ball_in_view_close);
-                    //world.removePercept(VCWorld.ball_not_in_view);
-                }
-
-            } else {
-                world.addPercept(m_name,VCWorld.ball_not_in_view);
-                world.removePercept(m_name,VCWorld.ball_in_view_close);
-                world.removePercept(m_name,VCWorld.ball_in_view_far);
-                //world.addPercept(VCWorld.ball_not_in_view);
-                //world.removePercept(VCWorld.ball_in_view_close);
-                //world.removePercept(VCWorld.ball_in_view_far);
-            }
-            
-            if(goal != null) {
-            	if (goal.getDistance() < 25.0) {
-                    world.addPercept(m_name,VCWorld.net_close);
-                    world.removePercept(m_name,VCWorld.net_far);
-                    //world.addPercept(VCWorld.net_close);
-                    //world.removePercept(VCWorld.net_far);
-                } else {
-                    world.addPercept(m_name,VCWorld.net_far);
-                    world.removePercept(m_name,VCWorld.net_close);
-                    //world.addPercept(VCWorld.net_far);
-                    //world.removePercept(VCWorld.net_close);
-                }
+                world.addPercept(VCWorld.kick_off_r);
             }else {
-            	world.addPercept(m_name,VCWorld.cant_see_net);
-            	world.removePercept(m_name,VCWorld.net_far);
-                world.removePercept(m_name,VCWorld.net_close);
-                //world.addPercept(VCWorld.cant_see_net);
-            	//world.removePercept(VCWorld.net_far);
-                //world.removePercept(VCWorld.net_close);
+            	world.removePercept(VCWorld.kick_off_r);
             }
-            
-            System.out.println("Beliefe of " + m_name + " is: " + world.getPercepts(m_name));
-            
+
+            relevantObjects.forEach((objName, objValues) -> {
+                objValues.forEach(v -> {
+                    ObjectInfo obj = m_memory.getObject(objName, v);
+                    if(obj != null) {
+                        if (objName == "ball") {
+                            ball = obj;
+                        }
+                        world.addPercept(m_name, ASSyntax.createLiteral("distance", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_distance)));
+                        world.addPercept(m_name, ASSyntax.createLiteral("direction", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_direction)));
+                        world.addPercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
+
+                    } else {
+                        world.removePercept(m_name, ASSyntax.createLiteral("viz", ASSyntax.createString(objName), ASSyntax.createString(v)));
+                    }
+                });
+            });
+
             try {
-                Thread.sleep(2 * SoccerParams.simulator_step);
+                Thread.sleep(2*SoccerParams.simulator_step);
             } catch (Exception e) {
             }
-            
-            
+
+
         }
         m_krislet.bye();
     }
@@ -196,12 +185,18 @@ class Brain extends Thread implements SensorInput {
     public void see(VisualInfo info) {
         m_memory.store(info);
     }
+    public void setSpeedDirection(Float d) {
+        m_memory.storeSpeedDirection(d);
+    }
 
     public ObjectInfo getBall() {
-    	return ball;
+        return ball;
     }
     public ObjectInfo getGoal() {
-    	return goal;
+        return goal;
+    }
+    public ObjectInfo getFlag(String flag) {
+        return m_memory.getObject("flag", flag);
     }
     //---------------------------------------------------------------------------
     // This function receives hear information from player

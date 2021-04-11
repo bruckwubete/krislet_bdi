@@ -158,7 +158,7 @@ class BallInfo extends ObjectInfo
   // Initialization member functions
   public BallInfo()
   {
-    super("ball");
+    super("");
   }
 }
 
@@ -230,6 +230,12 @@ class LineInfo extends ObjectInfo
   public LineInfo(char kind)
   {
     super("line");
+    // System.out.println("FOUND Line: " + kind);
     m_kind = kind;
+  }
+
+  public char getKind()
+  {
+    return m_kind;
   }
 }
