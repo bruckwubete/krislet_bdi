@@ -192,8 +192,8 @@ class Brain extends Thread implements SensorInput {
     public ObjectInfo getBall() {
         return ball;
     }
-    public ObjectInfo getGoal() {
-        return goal;
+    public ObjectInfo getGoal(String g) {
+        return m_memory.getObject("goal",g);
     }
     public ObjectInfo getFlag(String flag) {
         return m_memory.getObject("flag", flag);

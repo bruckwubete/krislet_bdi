@@ -197,8 +197,8 @@ class Krislet implements SendCommand
     public ObjectInfo getBall() {
     	return m_brain.getBall();
     }
-    public ObjectInfo getGoal() {
-    	return m_brain.getGoal();
+    public ObjectInfo getGoal(String g) {
+    	return m_brain.getGoal(g);
     }
     public ObjectInfo getFlag(String flag) {
     	return m_brain.getFlag(flag);

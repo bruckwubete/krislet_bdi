@@ -16,7 +16,7 @@ joining_the_game.
 +goal_l <- !set_up.
 +goal_r <- !set_up.
 
-+!set_up <- move(-36,-20); -before_kick_off.
++!set_up <- move(-47,-0); -before_kick_off.
 
 +kick_off_l <- !defence.
 +kick_off_r <- !defence.
@@ -24,13 +24,13 @@ joining_the_game.
 +play_on <- !defence.
 
 +!defence : not(viz("ball", "")) <- turn_to_ball. //!attack.
-+!defence : viz("ball", "") & distance("ball", "", X) & X > 25.0 <- turn_to_ball. //!attack.
-+!defence : viz("ball", "") & distance("ball", "", X) & X <= 25.0 <- !chase_ball. //!attack.
++!defence : viz("ball", "") & distance("ball", "", X) & X > 15.0 <- turn_to_ball. //!attack.
++!defence : viz("ball", "") & distance("ball", "", X) & X <= 15.0 <- !chase_ball. //!attack.
 //default for attack
 +!defence <- turn_to_ball; !defence.
 
 +!chase_ball : not(viz("ball", "")) <- turn_to_ball.
-+!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 25.0 & direction("ball", "", Y) & Y > 2.0 <- !return_to_flag. // !chase_ball.
++!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 15.0 & direction("ball", "", Y) & Y > 2.0 <- !return_to_flag. // !chase_ball.
 +!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 1.0 & direction("ball", "", Y) & Y > 2.0 <- turn_to_ball; !chase_ball.
 +!chase_ball : viz("ball", "") & distance("ball", "", X) & X > 1.0 & direction("ball", "", Y) & Y <= 2.0 <- dash; !chase_ball.
 +!chase_ball : viz("ball", "") & distance("ball", "", X) & X <= 1.0 <- !pass_kick_dribble.
@@ -46,12 +46,17 @@ joining_the_game.
 +!turn_to_g : viz("goal", "r") <- !pass_kick_dribble.
 +!turn_to_g <- turn_to_ball; !turn_to_g.
 
-+!return_to_flag : not(viz("flag", "plt")) & goal_l <- !set_up.
-+!return_to_flag : not(viz("flag", "plt")) & goal_r <- !set_up.
-+!return_to_flag : not(viz("flag", "plt")) <- turn_to_flag(plt); !return_to_flag.
-+!return_to_flag : viz("flag", "plt") & distance("flag", "plt", X) & X > 1.0 & direction("flag", "plt", Y) & Y > 5.0 <- turn_to_flag(plt); !return_to_flag.
-+!return_to_flag : viz("flag", "plt") & distance("flag", "plt", X) & X > 1.0 & direction("flag", "plt", Y) & Y <= 5.0 <- dash; !return_to_flag.
-+!return_to_flag : viz("flag", "plt") & distance("flag", "plt", X) & X <= 1.0 <- !defence.
++!return_to_flag : not(viz("goal", "l")) & goal_l <- !set_up.
++!return_to_flag : not(viz("goal", "l")) & goal_r <- !set_up.
++!return_to_flag : not(viz("goal", "l")) <- turn_to_goal(l); !return_to_flag.
++!return_to_flag : viz("goal", "l") & distance("goal", "l", X) & X > 1.0 & direction("goal", "l", Y) & Y > 5.0 <- turn_to_goal(l); !return_to_flag.
++!return_to_flag : viz("goal", "l") & distance("goal", "l", X) & X > 1.0 & direction("goal", "l", Y) & Y <= 5.0 <- dash; !return_to_flag.
++!return_to_flag : viz("goal", "l") & distance("goal", "l", X) & X <= 1.0 <- !advance.
 +!return_to_flag <- !return_to_flag.
+
++!advance : not(viz("goal", "r")) <- turn_to_flag(r); !advance.
++!advance : (viz("goal", "r")) & direction("goal", "r", Y) & Y > 5.0<- turn_to_goal(r); !advance.
++!advance : (viz("goal", "r")) & direction("goal", "r", Y) & Y <= 1.0<- dash; dash; dash; !defence.
++!advance <- !advance.
 
 //+!attack <- !defence. //temp 
