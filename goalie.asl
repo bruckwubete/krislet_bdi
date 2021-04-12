@@ -51,6 +51,7 @@
     : (distance(S, D, X) & X > 3.0) & (direction(S, D, Y) & (Y >= -2.0 & Y <= 2.0))
         <-  .suspend(find(S, D));
             dash(X); !dash_to(S, D).
++!dash_to(S, D) : not(distance(S, D, X)) <- !find(S, D); !dash_to(S, D).
 +!dash_to(S, D) : true <- .printf("done dashing to station %s %s",S,D).
 
 
@@ -75,3 +76,4 @@
 +!dash_towards_ball : true <- .print("done, reached ball!").
 
 +!strike_to_goal(G) : distance("goal", G, X) & direction("goal", G, Y) <- kick(10, Y); .printf("done, kicked to goal %s", G).
++!strike_to_goal(G) : not(distance("goal", G, X)) <- !find("goal", G); !strike_to_goal(G); .printf("done, kicked to goal %s", G).
