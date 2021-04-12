@@ -26,8 +26,7 @@
                           .print("team not found");
                        }
                        !dash_towards_ball;
-                       .wait(direction("ball", "", D));
-                       catch(D);
+                       !catch_ball;
                        if(T == left) {
                          !dash_to("flag", "plc");
                        } elif(T == right) {
@@ -74,6 +73,10 @@
                 dash(X); !dash_towards_ball;
             }.
 +!dash_towards_ball : true <- .print("done, reached ball!").
+
++!catch_ball : not(distance("ball", "", X)) <- !return_to_station.
++!catch_ball : distance("ball", "", X) & direction("ball", "", Y) <- catch(Y).
++!catch_ball : true <- .print("done, trying to catch the ball!").
 
 +!strike_to_goal(G) : distance("goal", G, X) & direction("goal", G, Y) <- kick(10, Y); .printf("done, kicked to goal %s", G).
 +!strike_to_goal(G) : not(distance("goal", G, X)) <- !find("goal", G); !strike_to_goal(G); .printf("done, kicked to goal %s", G).
