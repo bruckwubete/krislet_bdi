@@ -18,9 +18,9 @@
 
 +!attack : team(T) <- !find_ball;
                        if(T == left) {
-                          .wait(kick_off_l | play_on);
+                          .wait(kick_off_l | free_kick_l | play_on);
                        } elif(T == right) {
-                         .wait(kick_off_r | play_on);
+                         .wait(kick_off_r | free_kick_r | play_on);
                        } else {
                           .print("team not found");
                        }

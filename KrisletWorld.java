@@ -51,7 +51,6 @@ public class KrisletWorld extends Environment {
                     this.players.get(ag).player.kick(p * 100, ka);
                     break;
                 case "move":
-                    waitForPlay(ag);
                     this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
 
@@ -64,6 +63,7 @@ public class KrisletWorld extends Environment {
                     this.joinTeam(ag, team);
                     break;
                 case "init_x":
+                    waitForPlay(ag);
                     Double x = Double.parseDouble(action.getTerms().get(0).toString());
                     this.players.get(ag).initX = x;
                     break;
@@ -93,7 +93,7 @@ public class KrisletWorld extends Environment {
     }
 
     private void waitForPlay(String ag) {
-        while (this.players.get(ag).player == null) {
+        while (this.players.get(ag) == null || this.players.get(ag).getPlayer() == null) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

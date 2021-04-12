@@ -28,7 +28,11 @@
                        !dash_towards_ball;
                        .wait(direction("ball", "", D));
                        catch(D);
-                       .wait(2000)
+                       if(T == left) {
+                         !dash_to("flag", "plc");
+                       } elif(T == right) {
+                         !dash_to("flag", "prc");
+                       }
                        if(T == left) {
                          !strike_to_goal("r");
                        } elif(T == right) {
@@ -44,7 +48,7 @@
 
 +!dash_to(S, D) : direction(S, D, X) & (X > 2.0 | X < -2.0) <- turn(X); !dash_to(S, D).
 +!dash_to(S, D)
-    : (distance(S, D, X) & X > 1.0) & (direction(S, D, Y) & (Y >= -2.0 & Y <= 2.0))
+    : (distance(S, D, X) & X > 3.0) & (direction(S, D, Y) & (Y >= -2.0 & Y <= 2.0))
         <-  .suspend(find(S, D));
             dash(X); !dash_to(S, D).
 +!dash_to(S, D) : true <- .printf("done dashing to station %s %s",S,D).
@@ -69,9 +73,5 @@
                 dash(X); !dash_towards_ball;
             }.
 +!dash_towards_ball : true <- .print("done, reached ball!").
-
-+!find_goal(G) : not(distance("goal", G, X)) <- .printf("trying to find goal %s", G); .suspend(dash_towards_ball); turn(100); !find_goal(G).
-+!find_goal(G) : direction("goal", G, X) & (X > 10.0 | X < -10.0) <-  .printf("trying to find goal %s", G); turn(X); !find_goal(G).
-+!find_goal(G) : true <- .printf("done, found goal %s", G).
 
 +!strike_to_goal(G) : distance("goal", G, X) & direction("goal", G, Y) <- kick(10, Y); .printf("done, kicked to goal %s", G).

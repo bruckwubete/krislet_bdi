@@ -19,6 +19,7 @@ public class KrisletContext implements Runnable {
         this.team = team;
         this.name = ag;
     }
+
     public void run() {
         try {
             String  hostName = new String("");
@@ -34,6 +35,10 @@ public class KrisletContext implements Runnable {
             e.printStackTrace();
             System.out.println(e.getLocalizedMessage());
         }
+    }
+
+    public Krislet getPlayer() {
+        return this.player;
     }
     
 };

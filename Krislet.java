@@ -109,6 +109,7 @@ class Krislet implements SendCommand
     m_port = port;
     m_team = team;
     m_playing = true;
+    m_name = ag;
     }
                                                                  
     //---------------------------------------------------------------------------
@@ -236,7 +237,13 @@ class Krislet implements SendCommand
     // This function sends initialization command to the server
     private void init()
     {
-    send("(init " + m_team + " (version 9))");
+        String command = "(init " + m_team + " (version 9)";
+        if (m_name.contains("goalie")) {
+            command += " (goalie))";
+        } else {
+            command += ")";
+        }
+        send(command);
     }
 
     //---------------------------------------------------------------------------
@@ -335,6 +342,7 @@ class Krislet implements SendCommand
     private InetAddress     m_host;         // Server address
     private int         m_port;         // server port
     private String      m_team;         // team name
+    private String      m_name;         // agent name
     private SensorInput     m_brain;        // input for sensor information
     private boolean             m_playing;              // controls the MainLoop
     private Pattern message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
