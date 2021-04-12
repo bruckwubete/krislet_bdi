@@ -29,6 +29,11 @@ public class KrisletWorld extends Environment {
 
         try {
             switch (action.getFunctor()) {
+                // main commands
+                case "catch":
+                    Double c = Double.parseDouble(action.getTerm(0).toString());
+                    this.players.get(ag).player.send_catch(0.3 * c);
+                    break;
                 case "turn":
                     Double a = Double.parseDouble(action.getTerm(0).toString());
                     this.players.get(ag).player.turn(0.3 * a);
@@ -47,9 +52,10 @@ public class KrisletWorld extends Environment {
                     break;
                 case "move":
                     waitForPlay(ag);
-                    //System.out.println("IN ACTION MOVE WITH PARAMS: first param is: " + ((NumberTermImpl) (action.getTerms().get(0))).solve());
                     this.players.get(ag).player.move(((NumberTermImpl) (action.getTerms().get(0))).solve(), ((NumberTermImpl) (action.getTerms().get(1))).solve());
                     break;
+
+                // admin commands
                 case "join_team":
                     String team = action.getTerms().get(0).toString();
                     if (team.equals("right")) {

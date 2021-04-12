@@ -26,11 +26,9 @@
                           .print("team not found");
                        }
                        !dash_towards_ball;
-                       if(T == left) {
-                          !find_goal("r");
-                       } elif(T == right) {
-                          !find_goal("l");
-                       }
+                       .wait(direction("ball", "", D));
+                       catch(D);
+                       .wait(2000)
                        if(T == left) {
                          !strike_to_goal("r");
                        } elif(T == right) {
@@ -58,14 +56,14 @@
 +!find_ball : true <- .print("done, found ball!"); !track_ball.
 
 +!track_ball : not(direction("ball", _, _)) <- !find_ball.
-+!track_ball : direction("ball", "", X) & distance("ball", "", Y) & Y > 25.0 <- turn(X); !track_ball. //suspend based on distance
++!track_ball : direction("ball", "", X) & distance("ball", "", Y) & Y > 15.0 <- turn(X); !track_ball. //suspend based on distance
 +!track_ball : true <- .print("done, ball in range!").
 
 +!dash_towards_ball : direction("ball", "", X) & (X > 2.0 | X < -2.0) <- turn(X); !dash_towards_ball.
 +!dash_towards_ball
     : (distance("ball", "", X) & X > 1.0) & (direction("ball", "", Y) & (Y >= -2.0 & Y <= 2.0))
         <-  .suspend(find_ball);
-            if(X > 25) {
+            if(X > 15) {
                 !return_to_station;
             } else {
                 dash(X); !dash_towards_ball;
