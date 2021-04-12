@@ -161,6 +161,13 @@ class Krislet implements SendCommand
     send("(turn " + Double.toString(moment) + ")");
     }
 
+    //---------------------------------------------------------------------------
+    // This function sends catch command to the server
+    public void send_catch(double moment)
+    {
+        send("(catch " + Double.toString(moment) + ")");
+    }
+
     public void turn_neck(double moment)
     {
     send("(turn_neck " + Double.toString(moment) + ")");
@@ -177,7 +184,7 @@ class Krislet implements SendCommand
     // This function sends kick command to the server
     public void kick(double power, double direction)
     {
-    send("(kick " + Double.toString(power) + " " + Double.toString(direction) + ")");
+       send("(kick " + Double.toString(power) + " " + Double.toString(direction) + ")");
     }
 
     //---------------------------------------------------------------------------

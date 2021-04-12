@@ -9,11 +9,11 @@ MAS krislet_player {
 
         defender [team="left", init_x="-36", init_y="20", station="flag plb"] agentArchClass KrisletAgentArch #1;
         defender [team="left", init_x="-36", init_y="-20", station="flag plt"] agentArchClass KrisletAgentArch #1;
-        defender [team="right", init_x="-36", init_y="-20", station="flag prt"] agentArchClass KrisletAgentArch #1;
-        defender [team="right", init_x="-36", init_y="20", station="flag prb"] agentArchClass KrisletAgentArch #1;
+        defender [team="right", init_x="-36", init_y="-20", station="flag prb"] agentArchClass KrisletAgentArch #1;
+        defender [team="right", init_x="-36", init_y="20", station="flag prt"] agentArchClass KrisletAgentArch #1;
 
-        defender [team="left", init_x="-47", init_y="0", station="goal l"] agentArchClass KrisletAgentArch #1;
-        defender [team="right", init_x="-47", init_y="0", station="goal r"] agentArchClass KrisletAgentArch #1;
+        goalie [team="left", init_x="-47", init_y="0", station="goal l"] agentArchClass KrisletAgentArch #1;
+        goalie [team="right", init_x="-47", init_y="0", station="goal r"] agentArchClass KrisletAgentArch #1;
 
 
 }
