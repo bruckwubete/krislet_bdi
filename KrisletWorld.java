@@ -31,7 +31,7 @@ public class KrisletWorld extends Environment {
             switch (action.getFunctor()) {
                 case "turn":
                     Double a = Double.parseDouble(action.getTerm(0).toString());
-                    this.players.get(ag).player.turn(0.1 * a);
+                    this.players.get(ag).player.turn(0.3 * a);
                     break;
                 case "dash":
                     Double d = Double.parseDouble(action.getTerm(0).toString());
@@ -56,6 +56,20 @@ public class KrisletWorld extends Environment {
                         Thread.sleep(100);
                     }
                     this.joinTeam(ag, team);
+                    break;
+                case "init_x":
+                    Double x = Double.parseDouble(action.getTerms().get(0).toString());
+                    this.players.get(ag).initX = x;
+                    break;
+                case "init_y":
+                    Double y = Double.parseDouble(action.getTerms().get(0).toString());
+                    this.players.get(ag).initY = y;
+                    break;
+                case "station":
+                    String station = action.getTerms().get(0).toString();
+                    String detals = action.getTerms().get(1).toString();
+                    this.players.get(ag).station = station;
+                    this.players.get(ag).stationDetails = detals;
                     break;
                 default:
                     getLogger().info("The action " + action + " is not implemented!");

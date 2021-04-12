@@ -96,7 +96,7 @@ class Krislet implements SendCommand
                      port, team, "");
 
     // enter main loop
-    player.mainLoop(null,"");
+    player.mainLoop(null,"",  null);
     }  
 
     //---------------------------------------------------------------------------
@@ -124,7 +124,7 @@ class Krislet implements SendCommand
 
     //---------------------------------------------------------------------------
     // This is main loop for player
-    protected void mainLoop(KrisletWorld world, String ag) throws IOException
+    protected void mainLoop(KrisletWorld world, String ag, KrisletContext krisletContext) throws IOException
     {
     byte[] buffer = new byte[MSG_SIZE];
     DatagramPacket packet = new DatagramPacket(buffer, MSG_SIZE);
@@ -133,7 +133,7 @@ class Krislet implements SendCommand
     init();
 
     m_socket.receive(packet);
-    parseInitCommand(world, new String(buffer), ag);
+    parseInitCommand(world, new String(buffer), ag, krisletContext);
     m_port = packet.getPort();
 
     // Now we should be connected to the server
@@ -204,7 +204,7 @@ class Krislet implements SendCommand
 
     //---------------------------------------------------------------------------
     // This function parses initial message from the server
-    protected void parseInitCommand(KrisletWorld world, String message, String ag)
+    protected void parseInitCommand(KrisletWorld world, String message, String ag, KrisletContext krisletContext)
     throws IOException
     {
     Matcher m = Pattern.compile("^\\(init\\s(\\w)\\s(\\d{1,2})\\s(\\w+?)\\).*$").matcher(message);
@@ -218,7 +218,7 @@ class Krislet implements SendCommand
                 m_team,
                 m.group(1).charAt(0),
                 Integer.parseInt(m.group(2)),
-                m.group(3), ag);
+                m.group(3), ag, krisletContext);
     }
 
 

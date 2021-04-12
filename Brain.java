@@ -44,6 +44,7 @@ class Brain extends Thread implements SensorInput {
         add("goal_kick_l"); add("goal_kick_r");
         add("kick_in_l"); add("kick_in_r");
         add("kick_off_l"); add("kick_off_r");
+        add("free_kick_l"); add("free_kick_r");
     }};
     HashMap<String, Literal> playModeToPercept = new HashMap<String, Literal>();
 
@@ -52,7 +53,7 @@ class Brain extends Thread implements SensorInput {
                  String team,
                  char side,
                  int number,
-                 String playMode, String ag) {
+                 String playMode, String ag, KrisletContext krisletContext) {
         this.world = world;
         m_timeOver = false;
         m_krislet = krislet;
@@ -62,6 +63,7 @@ class Brain extends Thread implements SensorInput {
         m_number = number;
         m_playMode = playMode;
         m_name = ag;
+        this.krisletContext = krisletContext;
 
         playModes.forEach(m -> {
             playModeToPercept.put(m, ASSyntax.createLiteral(m));
@@ -100,6 +102,11 @@ class Brain extends Thread implements SensorInput {
             world.clearPercepts();
 
             world.addPercept(m_name, ASSyntax.createLiteral("team", ASSyntax.createLiteral(m_team)));
+            if(krisletContext != null) {
+                world.addPercept(m_name, ASSyntax.createLiteral("init_x", ASSyntax.createNumber(krisletContext.initX)));
+                world.addPercept(m_name, ASSyntax.createLiteral("init_y", ASSyntax.createNumber(krisletContext.initY)));
+                world.addPercept(m_name, ASSyntax.createLiteral("station", ASSyntax.createString(krisletContext.station), ASSyntax.createString(krisletContext.stationDetails)));
+            }
 
             // add play mode if we care about it
             m_playMode = m_playMode.replaceAll("_([0-9]+)", "");
@@ -172,6 +179,7 @@ class Brain extends Thread implements SensorInput {
     private String m_name;
     private String m_team;
     private int m_number;
+    private KrisletContext krisletContext;
 
     //helper
     private boolean stringToBool(String string) throws Exception {

@@ -2,9 +2,13 @@ import java.net.InetAddress;
 
 public class KrisletContext implements Runnable {
     public  Krislet player;
+    public Double initY = 0.0;
+    public Double initX = 0.0;
     private KrisletWorld world;
     private String name;
     public String team;
+    public String station = "";
+    public String stationDetails = "";
     
     
 
@@ -24,7 +28,7 @@ public class KrisletContext implements Runnable {
             this.player = new Krislet(InetAddress.getByName(hostName), port, team, name);
 
             // enter main loop
-            this.player.mainLoop(world,name);
+            this.player.mainLoop(world, name, this);
 
         } catch (Exception e) {
             e.printStackTrace();
