@@ -1,9 +1,20 @@
-/*
- Jason Exercise: Vacuum Cleaning 1
-*/
+MAS krislet_player {
 
-MAS krislet {
-    environment: VCWorld
-    agents: vc;
+    environment: KrisletWorld
+    agents:
+        striker [team="left", init_x="-10", init_y="0"] agentArchClass KrisletAgentArch #1;
+        striker [team="left", init_x="0", init_y="10"] agentArchClass KrisletAgentArch #1;
+        striker [team="right", init_x="-10", init_y="0"] agentArchClass KrisletAgentArch #1;
+        striker [team="right", init_x="0", init_y="10"] agentArchClass KrisletAgentArch #1;
+
+        defender [team="left", init_x="-36", init_y="20", station="flag plb"] agentArchClass KrisletAgentArch #1;
+        defender [team="left", init_x="-36", init_y="-20", station="flag plt"] agentArchClass KrisletAgentArch #1;
+        defender [team="right", init_x="-36", init_y="-20", station="flag prt"] agentArchClass KrisletAgentArch #1;
+        defender [team="right", init_x="-36", init_y="20", station="flag prb"] agentArchClass KrisletAgentArch #1;
+
+        defender [team="left", init_x="-47", init_y="0", station="goal l"] agentArchClass KrisletAgentArch #1;
+        defender [team="right", init_x="-47", init_y="0", station="goal r"] agentArchClass KrisletAgentArch #1;
+
+
 }
 

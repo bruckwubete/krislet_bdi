@@ -8,35 +8,68 @@
 //    Modified by:      Edgar Acosta
 //    Date:             March 4, 2008
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.Math;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Literal;
+
 import java.util.*;
-import java.util.regex.*;
+import java.lang.*;
+
+
 
 class Brain extends Thread implements SensorInput {
     //---------------------------------------------------------------------------
     // This constructor:
     // - stores connection to krislet
     // - starts thread for this object
-    public Brain(VCWorld world, SendCommand krislet,
+
+    HashMap<String, List<String>> relevantObjects = new HashMap<String, List<String>>(){{
+        put("ball", new ArrayList<String>(){{
+            add("");
+        }});
+        put("flag", new ArrayList<String>(){{
+            add(" c "); add(" rt"); add(" rb"); add(" lt"); add(" lb"); add(" ct"); add(" cb");
+            add("glt"); add("glb"); add("grt"); add("grb");
+            add("plt"); add("plc"); add("plb"); add("prt"); add("prc"); add("prb");
+        }});
+        put("goal", new ArrayList<String>(){{
+            add("l"); add("r");
+        }});
+        put("line", new ArrayList<String>(){{
+            add("t"); add("b");; add("l");; add("r");
+        }});
+    }};
+    List<String> playModes = new LinkedList<String>(){{
+        add("before_kick_off"); add("play_on");
+        add("goal_l"); add("goal_r");
+        add("goal_kick_l"); add("goal_kick_r");
+        add("kick_in_l"); add("kick_in_r");
+        add("kick_off_l"); add("kick_off_r");
+        add("free_kick_l"); add("free_kick_r");
+    }};
+    HashMap<String, Literal> playModeToPercept = new HashMap<String, Literal>();
+
+
+    public Brain(KrisletWorld world, SendCommand krislet,
                  String team,
                  char side,
                  int number,
-                 String playMode) {
+                 String playMode, String ag, KrisletContext krisletContext) {
         this.world = world;
         m_timeOver = false;
         m_krislet = krislet;
         m_memory = new Memory();
-        //m_team = team;
+        m_team = team;
         m_side = side;
-        // m_number = number;
+        m_number = number;
         m_playMode = playMode;
+        m_name = ag;
+        this.krisletContext = krisletContext;
+
+        playModes.forEach(m -> {
+            playModeToPercept.put(m, ASSyntax.createLiteral(m));
+        });
         start();
     }
-
 
     //---------------------------------------------------------------------------
     // This is main brain function used to make decision
@@ -63,55 +96,41 @@ class Brain extends Thread implements SensorInput {
     // ************************************************
 
     public void run() {
-        ObjectInfo object;
-        ObjectInfo ball;
-        ObjectInfo goal;
-
-        float turnAngle = 10;
-        float objectDistance = 10;
-
         while (!m_timeOver) {
+            //clear percepts
+            world.clearPercepts(m_name);
+            world.clearPercepts();
 
-            System.out.println("PLAY MODE IS IN: " + m_playMode);
-            if (Pattern.matches("^play_on.*", m_playMode)) world.addPercept(VCWorld.play_on);
-
-            if (Pattern.matches("^kick_off_l.*", m_playMode)) world.addPercept(VCWorld.kick_off_l);
-
-            if (Pattern.matches("^kick_off_r.*", m_playMode)) world.addPercept(VCWorld.kick_off_r);
-
-
-            boolean ballVisible = false;
-            boolean ballInRange = false;
-            boolean goalVisible = false;
-            //System.out.println("BRAIN SENSING");
-
-            //ball visible?
-            ball = m_memory.getObject("ball");
-
-            //goal visible?
-            if (m_side == 'l')
-                goal = m_memory.getObject("goal r");
-            else
-                goal = m_memory.getObject("goal l");
-
-            if (ball != null && ball.m_direction < 5.0) {
-                if (ball.m_distance < 1.0) {
-                    System.out.println("ball_in_view_close");
-                    world.addPercept(VCWorld.ball_in_view_close);
-                } else {
-                    System.out.println("ball_in_view_far");
-                    world.addPercept(VCWorld.ball_in_view_far);
-                }
-
-            } else {
-                System.out.println("ball_not_in_view");
-                world.addPercept(VCWorld.ball_not_in_view);
+            world.addPercept(m_name, ASSyntax.createLiteral("team", ASSyntax.createLiteral(m_team)));
+            if(krisletContext != null) {
+                world.addPercept(m_name, ASSyntax.createLiteral("init_x", ASSyntax.createNumber(krisletContext.initX)));
+                world.addPercept(m_name, ASSyntax.createLiteral("init_y", ASSyntax.createNumber(krisletContext.initY)));
+                world.addPercept(m_name, ASSyntax.createLiteral("station", ASSyntax.createString(krisletContext.station), ASSyntax.createString(krisletContext.stationDetails)));
             }
+
+            // add play mode if we care about it
+            m_playMode = m_playMode.replaceAll("_([0-9]+)", "");
+            Literal playModeL = playModeToPercept.get(m_playMode);
+            if(playModeL != null){
+                world.addPercept(playModeL);
+            }
+
+            relevantObjects.forEach((objName, objValues) -> {
+                objValues.forEach(v -> {
+                    ObjectInfo obj = m_memory.getObject(objName, v);
+                    if(obj != null) {
+                        world.addPercept(m_name, ASSyntax.createLiteral("distance", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_distance)));
+                        world.addPercept(m_name, ASSyntax.createLiteral("direction", ASSyntax.createString(objName), ASSyntax.createString(v), ASSyntax.createNumber(obj.m_direction)));
+                    }
+                });
+            });
 
             try {
-                Thread.sleep(2 * SoccerParams.simulator_step);
+                Thread.sleep(2*SoccerParams.simulator_step);
             } catch (Exception e) {
             }
+
+
         }
         m_krislet.bye();
     }
@@ -129,7 +148,9 @@ class Brain extends Thread implements SensorInput {
     public void see(VisualInfo info) {
         m_memory.store(info);
     }
-
+    public void setSpeedDirection(Float d) {
+        m_memory.storeSpeedDirection(d);
+    }
 
     //---------------------------------------------------------------------------
     // This function receives hear information from player
@@ -154,7 +175,11 @@ class Brain extends Thread implements SensorInput {
     private char m_side;
     volatile private boolean m_timeOver;
     private String m_playMode;
-    private VCWorld world;
+    private KrisletWorld world;
+    private String m_name;
+    private String m_team;
+    private int m_number;
+    private KrisletContext krisletContext;
 
     //helper
     private boolean stringToBool(String string) throws Exception {

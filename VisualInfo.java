@@ -15,6 +15,7 @@
 
 //  Modified by:    Edgar Acosta
 //  Date:       March 5, 2008
+import javax.sound.sampled.Line;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -26,46 +27,46 @@ class VisualInfo
     public String m_message;
     
     // Split objects into specific lists
-    private Vector<?> m_ball_list;
-    private Vector<?> m_player_list;
-    private Vector<?> m_flag_list;
-    private Vector<?> m_goal_list;
-    private Vector<?> m_line_list;
+    private Vector<BallInfo> m_ball_list;
+    private Vector<PlayerInfo> m_player_list;
+    private Vector<FlagInfo> m_flag_list;
+    private Vector<GoalInfo> m_goal_list;
+    private Vector<LineInfo> m_line_list;
     
     // Constructor for 'see' information
     public VisualInfo(String info)
     {
     info.trim();
     m_message = info;
-    m_player_list = new Vector<Object>(22);
-    m_ball_list = new Vector<Object>(1);
-    m_goal_list = new Vector<Object>(10);
-    m_line_list = new Vector<Object>(20);
-    m_flag_list = new Vector<Object>(60);
+    m_player_list = new Vector<PlayerInfo>(22);
+    m_ball_list = new Vector<BallInfo>(1);
+    m_goal_list = new Vector<GoalInfo>(10);
+    m_line_list = new Vector<LineInfo>(20);
+    m_flag_list = new Vector<FlagInfo>(60);
     m_objects = new Vector<ObjectInfo>(113);
     }
     
-    public Vector<?> getBallList()
+    public Vector<BallInfo> getBallList()
     {
     return m_ball_list;
     }
     
-    public Vector<?> getPlayerList()
+    public Vector<PlayerInfo> getPlayerList()
     {
     return m_player_list;
     }
     
-    public Vector<?> getGoalList()
+    public Vector<GoalInfo> getGoalList()
     {
     return m_goal_list;
     }
     
-    public Vector<?> getLineList()
+    public Vector<LineInfo> getLineList()
     {
     return m_line_list;
     }
     
-    public Vector<?> getFlagList()
+    public Vector<FlagInfo> getFlagList()
     {
     return m_flag_list;
     }
@@ -116,6 +117,7 @@ class VisualInfo
         // this splits the string containing the other info about
         // the object (distance, direction, etc.)
         String[] relPos=m_info_p.split(Objects_m.group(2));
+        // if (!objInfo.m_type.contains("flag")) System.out.println("Created object for message " + objInfo.m_type + " with details " + Arrays.toString(relPos));
         // append the info depending on the number of additional attributes.
         int len = relPos.length;
         switch(len){
@@ -149,6 +151,7 @@ class VisualInfo
 
     //Player
     if(p_player.matcher(n).matches()){
+        //cSystem.out.println("RECEIVED Player INFO FROM SERVER" + objectName[1] + objectName[2]);
         String team = new String();
         int uniformNumber = 0;
         boolean goalie = false;
@@ -157,24 +160,33 @@ class VisualInfo
         case 3: uniformNumber = Integer.parseInt(objectName[2]); //if the player number is available
         case 2: team = p_quote.matcher(objectName[1]).replaceAll(""); //Team Name (remove quotation marks)
         objInfo = new PlayerInfo(team,uniformNumber,goalie);
+        m_player_list.add((PlayerInfo) objInfo);
         break;
-        default: objInfo = new PlayerInfo(); break;
+        default: objInfo = new PlayerInfo(); m_player_list.add((PlayerInfo) objInfo); break;
         }
     } //Ball
-    else if(p_ball.matcher(n).matches())
+    else if(p_ball.matcher(n).matches()) {
+        //cSystem.out.println("RECEIVED BALL INFO FROM SERVER" + objectName[1]);
         objInfo = new BallInfo();
+        m_ball_list.add((BallInfo) objInfo);
+    }
+
     //Goal
     else if(p_goal.matcher(n).matches()){
+        //cSystem.out.println("RECEIVED goal INFO FROM SERVER" + objectName[1]);
         if(len == 2)
         objInfo = new GoalInfo(objectName[1].charAt(0)); //if there is side info
         else
         objInfo = new GoalInfo();
+        m_goal_list.add((GoalInfo) objInfo);
     } //Line
     else if(p_line.matcher(n).matches()){
+        //cSystem.out.println("RECEIVED Line INFO FROM SERVER " + Arrays.toString(objectName));
         if(len == 2)
         objInfo = new LineInfo(objectName[1].charAt(0)); //if we know which line it is
         else
         objInfo = new LineInfo();
+        m_line_list.add((LineInfo) objInfo);
     } //Flag
     else if(p_flag.matcher(n).matches()){
         char type = ' '; // p|g
@@ -239,6 +251,7 @@ class VisualInfo
             // Implementing flags like this, allows one to specifically find a
             // particular flag (i.e. "flag c", or "flag p l t")
         objInfo = new FlagInfo(flagType, type, pos1, pos2, num, out);
+        m_flag_list.add((FlagInfo) objInfo);
         }
     }
     return objInfo;
